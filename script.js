@@ -72,7 +72,10 @@ async function getCallbacks(userId){
 exports.rescheduleCallback = async(event) =>{
 	client.setEnvironment(platformClient.PureCloudRegionHosts.sa_east_1);
 
-	await client.loginClientCredentialsGrant(config.clientId, config.clientSecret);
+	await client.loginClientCredentialsGrant(
+    process.env.PURECLOUD_CLIENT_ID,
+    process.env.PURECLOUD_CLIENT_SECRET
+  );
 	let apiInstance = new platformClient.ConversationsApi();
 	const body = {
 		"conversationId": event.conversationId,
