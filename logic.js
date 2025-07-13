@@ -142,8 +142,8 @@ async function reprogramar(conversationId) {
   }
 
   const nuevaFecha = getNewDate();
-  button.disabled = true;
-  button.textContent = "Reprogramando...";
+  //button.disabled = true;
+  //button.textContent = "Reprogramando...";
   const res = await fetch(`https://api.${REGION}/api/v2/conversations/callbacks/`, {
     method: 'PATCH',
     headers: {
