@@ -90,7 +90,7 @@ function buildTable(callbacks) {
     return;
   }
 
-  let html = `<table border="1" cellpadding="10" style="border-collapse: collapse;">
+  let html = `<table cellpadding="10" >
     <thead>
       <tr>
         <th>Nombre</th>
@@ -135,7 +135,10 @@ async function reprogramar(conversationId) {
       Authorization: `Bearer ${token}`,
       'Content-Type': 'application/json'
     },
-    body: JSON.stringify({ callbackScheduledTime: nuevaFecha })
+    body: JSON.stringify({
+			conversationId:conversationId,
+			callbackScheduledTime: nuevaFecha 
+		})
   });
 
   if (res.ok) {
