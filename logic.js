@@ -121,7 +121,12 @@ function buildTable(callbacks) {
         <td>${nombre}</td>
         <td>${telefono}</td>
         <td>${hora}</td>
-        <td><button onclick="reprogramar('${cb.conversationId}')">Reprogramar</button></td>
+        <td>
+					<button id="btn-${cb.conversationId}" onclick="reprogramar('${cb.conversationId}')">
+						Reprogramar
+					</button>
+					<span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
+				</td>
       </tr>`;
   });
 
@@ -137,7 +142,8 @@ async function reprogramar(conversationId) {
   }
 
   const nuevaFecha = getNewDate();
-
+  button.disabled = true;
+  button.textContent = "Reprogramando...";
   const res = await fetch(`https://api.${REGION}/api/v2/conversations/callbacks/`, {
     method: 'PATCH',
     headers: {
@@ -152,6 +158,7 @@ async function reprogramar(conversationId) {
 
   if (res.ok) {
     alert(`Callback reprogramado para ${nuevaFecha}`);
+		iniciarTemporizador(timerSpan, button);
   } else {
     const error = await res.json();
     console.error('Error reprogramando:', error);
@@ -168,6 +175,24 @@ function getNewDate() {
 
   return nuevaHoraMontevideo.toISOString();
 }
+
+function iniciarTemporizador(timerElement, button) {
+  let segundos = 60;
+  timerElement.textContent = `⏳ 60s`;
+
+  const intervalo = setInterval(() => {
+    segundos--;
+    timerElement.textContent = `⏳ ${segundos}s`;
+
+    if (segundos <= 0) {
+      clearInterval(intervalo);
+      timerElement.textContent = "";
+      button.disabled = false;
+      button.textContent = "Reprogramar";
+    }
+  }, 1000);
+}
+
 
 async function obtenerMiPerfil() {
   const token = localStorage.getItem('access_token');
