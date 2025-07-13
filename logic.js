@@ -45,41 +45,50 @@ async function exchangeCodeForToken(code) {
 	}
 }
 
-async function getCallbacks() {
-	const token = localStorage.getItem('access_token');
-	if (!token) {
-		alert('Debes iniciar sesión primero.');
-		return;
-	}
+async function getCallbacks(userId) {
+  const token = localStorage.getItem('access_token');
+  if (!token) {
+    alert('Primero debes iniciar sesión.');
+    return;
+  }
 
-	const body = {
-		order: 'desc',
-		orderBy: 'conversationStart',
-		paging: { pageNumber: 1, pageSize: 10 },
-		interval: '2025-07-01T03:00:00.000Z/2025-07-31T03:00:00.000Z',
-		segmentFilters: [
-			{
-				type: 'and',
-				predicates: [
-					{ dimension: 'mediaType', value: 'callback' },
-					{ dimension: 'segmentType', value: 'Scheduled' },
-					{ dimension: 'segmentEnd', operator: 'notExists' }
-				]
-			}
-		]
-	};
+  const body = {
+    order: 'desc',
+    orderBy: 'conversationStart',
+    paging: { pageNumber: 1, pageSize: 10 },
+    interval: '2025-07-01T03:00:00.000Z/2025-07-31T03:00:00.000Z',
+    segmentFilters: [
+      {
+        type: 'and',
+        predicates: [
+          { dimension: 'mediaType', value: 'callback' },
+          { dimension: 'segmentType', value: 'Scheduled' },
+          { dimension: 'segmentEnd', operator: 'notExists' }
+        ]
+      }
+    ]
+  };
 
-	const res = await fetch(`https://api.${REGION}/api/v2/analytics/conversations/details/query`, {
-		method: 'POST',
-		headers: {
-			Authorization: `Bearer ${token}`,
-			'Content-Type': 'application/json'
-		},
-		body: JSON.stringify(body)
-	});
+  if (userId) {
+    body.segmentFilters.push({
+      type: 'or',
+      predicates: [
+        { dimension: 'scoredAgentId', value: userId }
+      ]
+    });
+  }
 
-	const data = await res.json();
-	buildTable(data.conversations || []);
+  const res = await fetch(`https://api.${REGION}/api/v2/analytics/conversations/details/query`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(body)
+  });
+
+  const data = await res.json();
+  buildTable(data.conversations || []);
 }
 
 
@@ -152,14 +161,35 @@ async function reprogramar(conversationId) {
 
 function getNewDate() {
   const ahora = new Date();
-  const nueva = new Date(ahora.getTime() + 10000); // 10 segundos después
-  return nueva.toISOString();
+  // Convertir a equivalente de Montevideo (GMT-3)
+  const offsetUruguayEnMs = -3 * 60 * 60 * 1000;
+  const horaMontevideo = new Date(ahora.getTime()+offsetUruguayEnMs);
+  const nuevaHoraMontevideo = new Date(horaMontevideo.getTime() + 10 * 1000);
+
+  return nuevaHoraMontevideo.toISOString();
+}
+
+async function obtenerMiPerfil() {
+  const token = localStorage.getItem('access_token');
+  const response = await fetch(`https://api.${REGION}/api/v2/users/me`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  const data = await response.json();
+  return data.id; // este es tu userId
 }
 
 
-
 document.getElementById('login').addEventListener('click', login);
-document.getElementById('getCallbacks').addEventListener('click', getCallbacks);
+document.getElementById('getCallbacks').addEventListener('click', async () => {
+  let userId = urlParams.get('userId'); // primero intenta desde la URL
+  if (!userId) {
+    userId = await obtenerMiPerfil();   // si no hay, toma el del usuario autenticado
+  }
+  getCallbacks(userId);
+});
 
 // Detectar código de autorización en URL y cambiar por token
 const urlParams = new URLSearchParams(window.location.search);
