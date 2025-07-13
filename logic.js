@@ -129,7 +129,7 @@ async function reprogramar(conversationId) {
 
   const nuevaFecha = getNewDate();
 
-  const res = await fetch(`https://api.${REGION}/api/v2/conversations/callbacks/${conversationId}`, {
+  const res = await fetch(`https://api.${REGION}/api/v2/conversations/callbacks/`, {
     method: 'PATCH',
     headers: {
       Authorization: `Bearer ${token}`,
