@@ -130,9 +130,11 @@ function buildTable(callbacks) {
     data: rows,
     search: true,
     sort: true,
+    resizable : true,
+    fixedHeader: true,
     pagination: {
       enabled: true,
-      limit: 5
+      limit: 10
     },
     style: {
       td: { padding: "10px" },
