@@ -94,45 +94,95 @@ async function getCallbacks(userId) {
 
 function buildTable(callbacks) {
   const output = document.getElementById('output');
+
   if (!callbacks.length) {
     output.innerHTML = 'No hay callbacks activos.';
     return;
   }
 
-  let html = `<table cellpadding="10" >
-    <thead>
-      <tr>
-        <th>Nombre</th>
-        <th>Teléfono</th>
-        <th>Hora de inicio</th>
-        <th>Acción</th>
-      </tr>
-    </thead>
-    <tbody>`;
-
-  callbacks.forEach(cb => {
+  const rows = callbacks.map(cb => {
     const contact = cb.participants?.find(p => p.purpose === "customer") || {};
     const nombre = contact.name || "Sin nombre";
     const telefono = contact.address || "N/A";
     const hora = new Date(cb.conversationStart).toLocaleTimeString();
 
-    html += `
-      <tr>
-        <td>${nombre}</td>
-        <td>${telefono}</td>
-        <td>${hora}</td>
-        <td>
-					<button id="btn-${cb.conversationId}" onclick="reprogramar('${cb.conversationId}')">
-						Reprogramar
-					</button>
-					<span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
-				</td>
-      </tr>`;
+    return [
+      nombre,
+      telefono,
+      hora,
+      gridjs.html(`
+        <button id="btn-${cb.conversationId}" onclick="reprogramar('${cb.conversationId}')">
+          Reprogramar
+        </button>
+        <span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
+      `)
+    ];
   });
 
-  html += `</tbody></table>`;
-  output.innerHTML = html;
+  // Destruir tabla anterior si existe
+  if (window.gridInstance) {
+    window.gridInstance.destroy();
+  }
+
+  // Crear nueva tabla
+  window.gridInstance = new gridjs.Grid({
+    columns: ["Nombre", "Teléfono", "Hora de inicio", "Acción"],
+    data: rows,
+    search: true,
+    sort: true,
+    pagination: {
+      enabled: true,
+      limit: 5
+    },
+    style: {
+      td: { padding: "10px" },
+      th: { padding: "10px", backgroundColor: "#f0f0f0" }
+    }
+  }).render(output);
 }
+
+
+// function buildTable(callbacks) {
+//   const output = document.getElementById('output');
+//   if (!callbacks.length) {
+//     output.innerHTML = 'No hay callbacks activos.';
+//     return;
+//   }
+
+//   let html = `<table cellpadding="10" >
+//     <thead>
+//       <tr>
+//         <th>Nombre</th>
+//         <th>Teléfono</th>
+//         <th>Hora de inicio</th>
+//         <th>Acción</th>
+//       </tr>
+//     </thead>
+//     <tbody>`;
+
+//   callbacks.forEach(cb => {
+//     const contact = cb.participants?.find(p => p.purpose === "customer") || {};
+//     const nombre = contact.name || "Sin nombre";
+//     const telefono = contact.address || "N/A";
+//     const hora = new Date(cb.conversationStart).toLocaleTimeString();
+
+//     html += `
+//       <tr>
+//         <td>${nombre}</td>
+//         <td>${telefono}</td>
+//         <td>${hora}</td>
+//         <td>
+// 					<button id="btn-${cb.conversationId}" onclick="reprogramar('${cb.conversationId}')">
+// 						Reprogramar
+// 					</button>
+// 					<span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
+// 				</td>
+//       </tr>`;
+//   });
+
+//   html += `</tbody></table>`;
+//   output.innerHTML = html;
+// }
 
 async function reprogramar(conversationId) {
   const token = localStorage.getItem('access_token');
@@ -180,7 +230,7 @@ function getNewDate() {
 }
 
 function iniciarTemporizador(timerElement, button) {
-  let segundos = 60;
+  let segundos = 120;
   timerElement.textContent = `⏳ 60s`;
 
   const intervalo = setInterval(() => {
@@ -226,7 +276,7 @@ if (urlParams.has('code')) {
 	exchangeCodeForToken(code)
 		.then(() => {
 			history.replaceState(null, '', REDIRECT_URI); // Limpia la URL
-			alert('Login exitoso! Ya podés pedir callbacks.');
+			alert('Login exitoso!');
 		})
 		.catch(err => alert('Error en login: ' + err.message));
 }

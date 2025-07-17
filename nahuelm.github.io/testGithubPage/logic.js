@@ -142,8 +142,11 @@ async function reprogramar(conversationId) {
   }
 
   const nuevaFecha = getNewDate();
-  //button.disabled = true;
-  //button.textContent = "Reprogramando...";
+	const button = document.getElementById(`btn-${conversationId}`);
+  const timerSpan = document.getElementById(`timer-${conversationId}`);
+
+  button.disabled = true;
+  button.textContent = "Reprogramando...";
   const res = await fetch(`https://api.${REGION}/api/v2/conversations/callbacks/`, {
     method: 'PATCH',
     headers: {
@@ -177,8 +180,8 @@ function getNewDate() {
 }
 
 function iniciarTemporizador(timerElement, button) {
-  let segundos = 60;
-  timerElement.textContent = `⏳ 60s`;
+  let segundos = 120;
+  timerElement.textContent = `⏳ 120s`;
 
   const intervalo = setInterval(() => {
     segundos--;
