@@ -166,7 +166,7 @@ function obtenerWrapupsDeAgentes(participants) {
         (session.segments || []).forEach(segment => {
           const code = segment.wrapupCode || null;
           const note = segment.wrapupNotes || null;
-
+          console.log("entra")
           if (code || note) {
             wrapups.push({
               wrapupCode: code,
