@@ -111,7 +111,7 @@ function buildTable(callbacks) {
     const wrapups = obtenerWrapupsDeAgentes(cb.participants)
     console.log(wrapups);
     const queue = "";
-    const wrapup_code = wrapups[0].wrapupCode;
+    const wrapup_code = "";
     const notes = "";
 
     return [
