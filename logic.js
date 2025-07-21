@@ -101,10 +101,11 @@ function buildTable(callbacks) {
   }
 
   const rows = callbacks.map(cb => {
-    const contact = cb.participants?.find(p => p.purpose === "customer") || {};
-    const nombre = contact.name || "Sin nombre";
-    const telefono = contact.address || "N/A";
-    const hora = new Date(cb.conversationStart).toLocaleTimeString();
+    const agents = cb.participants?.filter(p => p.purpose === "agent") || [];
+    const contact = agents[agents.length - 1] || {};
+    const nombre = contact.sessions[0].outboundContactId || "Sin nombre";
+    const telefono = contact.sessions[0].callbackNumbers[0] || "N/A";
+    const hora = contact.sessions[0].callbackScheduledTime;
 
     return [
       nombre,
@@ -143,48 +144,6 @@ function buildTable(callbacks) {
   }).render(output);
 }
 
-
-// function buildTable(callbacks) {
-//   const output = document.getElementById('output');
-//   if (!callbacks.length) {
-//     output.innerHTML = 'No hay callbacks activos.';
-//     return;
-//   }
-
-//   let html = `<table cellpadding="10" >
-//     <thead>
-//       <tr>
-//         <th>Nombre</th>
-//         <th>Teléfono</th>
-//         <th>Hora de inicio</th>
-//         <th>Acción</th>
-//       </tr>
-//     </thead>
-//     <tbody>`;
-
-//   callbacks.forEach(cb => {
-//     const contact = cb.participants?.find(p => p.purpose === "customer") || {};
-//     const nombre = contact.name || "Sin nombre";
-//     const telefono = contact.address || "N/A";
-//     const hora = new Date(cb.conversationStart).toLocaleTimeString();
-
-//     html += `
-//       <tr>
-//         <td>${nombre}</td>
-//         <td>${telefono}</td>
-//         <td>${hora}</td>
-//         <td>
-// 					<button id="btn-${cb.conversationId}" onclick="reprogramar('${cb.conversationId}')">
-// 						Reprogramar
-// 					</button>
-// 					<span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
-// 				</td>
-//       </tr>`;
-//   });
-
-//   html += `</tbody></table>`;
-//   output.innerHTML = html;
-// }
 
 async function reprogramar(conversationId) {
   const token = localStorage.getItem('access_token');
@@ -233,7 +192,7 @@ function getNewDate() {
 
 function iniciarTemporizador(timerElement, button) {
   let segundos = 120;
-  timerElement.textContent = `⏳ 60s`;
+  timerElement.textContent = `⏳ 120s`;
 
   const intervalo = setInterval(() => {
     segundos--;
@@ -258,7 +217,7 @@ async function obtenerMiPerfil() {
   });
 
   const data = await response.json();
-  return data.id; // este es tu userId
+  return data.id; 
 }
 
 
@@ -271,7 +230,7 @@ document.getElementById('getCallbacks').addEventListener('click', async () => {
   getCallbacks(userId);
 });
 
-// Detectar código de autorización en URL y cambiar por token
+
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('code')) {
 	const code = urlParams.get('code');
