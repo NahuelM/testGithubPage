@@ -101,16 +101,26 @@ function buildTable(callbacks) {
   }
 
   const rows = callbacks.map(cb => {
+    const startDate = cb.conversationStart;
     const agents = cb.participants?.filter(p => p.purpose === "agent") || [];
     const contact = agents[agents.length - 1] || {};
     const nombre = contact.sessions[0].outboundContactId || "Sin nombre";
-    const telefono = contact.sessions[0].callbackNumbers[0] || "N/A";
+    const telefonos = contact.sessions[0].callbackNumbers[0] || "N/A";
     const hora = contact.sessions[0].callbackScheduledTime;
-
+    const campania = contact.sessions[0].outboundCampaignId || "Sin nombre";
+    const cola = "";
+    const tipificacion = "";
+    const notas = "";
+    
     return [
       nombre,
-      telefono,
+      startDate,
+      telefonos,
       hora,
+      campania,
+      cola,
+      tipificacion,
+      notas,
       gridjs.html(`
         <button id="btn-${cb.conversationId}" onclick="reprogramar('${cb.conversationId}')">
           Reprogramar
