@@ -159,14 +159,16 @@ function buildTable(callbacks) {
 
 function obtenerWrapupsDeAgentes(participants) {
   const wrapups = [];
-
+  console.log("entra a func")
   (participants || []).forEach(participant => {
     if (participant.purpose === "agent") {
+      console.log("agent");
       (participant.sessions || []).forEach(session => {
+        console.log("sesion");
         (session.segments || []).forEach(segment => {
           const code = segment.wrapupCode || null;
           const note = segment.wrapupNotes || null;
-          console.log("entra")
+          console.log("entra segments")
           if (code || note) {
             wrapups.push({
               wrapupCode: code,
