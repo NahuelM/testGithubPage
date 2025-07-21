@@ -104,23 +104,25 @@ function buildTable(callbacks) {
     const startDate = cb.conversationStart;
     const agents = cb.participants?.filter(p => p.purpose === "agent") || [];
     const contact = agents[agents.length - 1] || {};
-    const nombre = contact.sessions[0].outboundContactId || "Sin nombre";
-    const telefonos = contact.sessions[0].callbackNumbers[0] || "N/A";
-    const hora = contact.sessions[0].callbackScheduledTime;
-    const campania = contact.sessions[0].outboundCampaignId || "Sin nombre";
-    const cola = "";
-    const tipificacion = "";
-    const notas = "";
-    
+    const contactName = contact.sessions[0].outboundContactId || "Sin nombre";
+    const phones = contact.sessions[0].callbackNumbers[0] || "N/A";
+    const date = contact.sessions[0].callbackScheduledTime;
+    const campaing = contact.sessions[0].outboundCampaignId || "Sin nombre";
+    const wrapups = obtenerWrapupsDeAgentes(cb.participants)
+    console.log(wrapups);
+    const queue = "";
+    const wrapup_code = wrapups[0].wrapupCode;
+    const notes = "";
+
     return [
-      nombre,
+      contactName,
       startDate,
-      telefonos,
-      hora,
-      campania,
-      cola,
-      tipificacion,
-      notas,
+      phones,
+      date,
+      campaing,
+      queue,
+      wrapup_code,
+      notes,
       gridjs.html(`
         <button id="btn-${cb.conversationId}" onclick="reprogramar('${cb.conversationId}')">
           Reprogramar
@@ -137,7 +139,7 @@ function buildTable(callbacks) {
 
   // Crear nueva tabla
   window.gridInstance = new gridjs.Grid({
-    columns: ["Nombre", "Teléfono", "Hora de inicio", "Acción"],
+    columns: ["Nombre", "Start Date","Teléfono", "Hora de inicio", "Campaña", "Cola", "Tipificacion", "Notas","Acción"],
     data: rows,
     search: true,
     sort: true,
@@ -153,6 +155,32 @@ function buildTable(callbacks) {
     }
   }).render(output);
 }
+
+
+function obtenerWrapupsDeAgentes(participants) {
+  const wrapups = [];
+
+  (participants || []).forEach(participant => {
+    if (participant.purpose === "agent") {
+      (participant.sessions || []).forEach(session => {
+        (session.segments || []).forEach(segment => {
+          const code = segment.wrapupCode || null;
+          const note = segment.wrapupNotes || null;
+
+          if (code || note) {
+            wrapups.push({
+              wrapupCode: code,
+              wrapupNotes: note
+            });
+          }
+        });
+      });
+    }
+  });
+
+  return wrapups;
+}
+
 
 
 async function reprogramar(conversationId) {
