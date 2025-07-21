@@ -182,15 +182,15 @@ function obtenerWrapupsDeAgentes(participants) {
         console.log(`    🔄 Tiene ${segments.length} segmento(s)`);
 
         segments.forEach((segment, k) => {
-          const code = segment.wrapupCode || null;
-          const note = segment.wrapupNotes || null;
+          const code = segment.wrapUpCode || null;
+          const note = segment.wrapUpNote || null;
 
           console.log(`      📍 Segment[${k}]: wrapupCode=${code}, wrapupNotes=${note}`);
 
           if (code || note) {
             wrapups.push({
-              wrapupCode: code,
-              wrapupNotes: note
+              wrapUpCode: code,
+              wrapUpNote: note
             });
           }
         });
