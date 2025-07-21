@@ -182,6 +182,7 @@ function obtenerWrapupsDeAgentes(participants) {
         console.log(`    🔄 Tiene ${segments.length} segmento(s)`);
 
         segments.forEach((segment, k) => {
+        if (segment.segmentType === "wrapup"){
           const code = segment.wrapUpCode || null;
           const note = segment.wrapUpNote || null;
 
@@ -193,7 +194,7 @@ function obtenerWrapupsDeAgentes(participants) {
               wrapUpNote: note
             });
           }
-        });
+        }});
       });
     }
   });
