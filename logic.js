@@ -159,16 +159,34 @@ function buildTable(callbacks) {
 
 function obtenerWrapupsDeAgentes(participants) {
   const wrapups = [];
-  console.log("entra a func")
-  (participants || []).forEach(participant => {
+
+  console.log("➡️ Iniciando función obtenerWrapupsDeAgentes");
+  if (!participants || !Array.isArray(participants)) {
+    console.log("❌ participants no es un array válido:", participants);
+    return wrapups;
+  }
+
+  participants.forEach((participant, i) => {
+    //console.log(`🔍 Revisión de participant[${i}]: purpose=${participant.purpose}`);
+
     if (participant.purpose === "agent") {
-      console.log("agent");
-      (participant.sessions || []).forEach(session => {
-        console.log("sesion");
-        (session.segments || []).forEach(segment => {
+      console.log(`✅ Participant[${i}] es un agent`);
+
+      const sessions = participant.sessions || [];
+      console.log(`➡️ Tiene ${sessions.length} sesión(es)`);
+
+      sessions.forEach((session, j) => {
+        console.log(`  📞 Session[${j}]`);
+
+        const segments = session.segments || [];
+        console.log(`    🔄 Tiene ${segments.length} segmento(s)`);
+
+        segments.forEach((segment, k) => {
           const code = segment.wrapupCode || null;
           const note = segment.wrapupNotes || null;
-          console.log("entra segments")
+
+          console.log(`      📍 Segment[${k}]: wrapupCode=${code}, wrapupNotes=${note}`);
+
           if (code || note) {
             wrapups.push({
               wrapupCode: code,
@@ -180,6 +198,7 @@ function obtenerWrapupsDeAgentes(participants) {
     }
   });
 
+  console.log("✅ Finalizado. Wrapups encontrados:", wrapups.length);
   return wrapups;
 }
 
