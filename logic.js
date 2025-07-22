@@ -91,7 +91,6 @@ async function getCallbacks(userId) {
   buildTable(data.conversations || []);
 }
 
-
 function buildTable(callbacks) {
   const output = document.getElementById('output');
 
@@ -110,9 +109,9 @@ function buildTable(callbacks) {
     const campaing = contact.sessions[0].outboundCampaignId || "Sin nombre";
     const wrapups = obtenerWrapupsDeAgentes(cb.participants)
     console.log(wrapups);
-    const queue = "";
-    const wrapup_code = "";
-    const notes = "";
+    const queue = contact.sessions[0].segments[0].queueId;
+    const wrapup_code = wrapups.map(w => w.wrapupCode ?? "-").join(", ");
+    const notes = wrapups.map(w => w.wrapupNotes ?? "-").join(", ");
 
     return [
       contactName,
@@ -155,7 +154,6 @@ function buildTable(callbacks) {
     }
   }).render(output);
 }
-
 
 function obtenerWrapupsDeAgentes(participants) {
   const wrapups = [];
@@ -202,8 +200,6 @@ function obtenerWrapupsDeAgentes(participants) {
   console.log("✅ Finalizado. Wrapups encontrados:", wrapups.length);
   return wrapups;
 }
-
-
 
 async function reprogramar(conversationId) {
   const token = localStorage.getItem('access_token');
