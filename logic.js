@@ -165,7 +165,6 @@ function obtenerWrapupsDeAgentes(participants) {
   }
 
   participants.forEach((participant, i) => {
-    //console.log(`🔍 Revisión de participant[${i}]: purpose=${participant.purpose}`);
 
     if (participant.purpose === "agent") {
       console.log(`✅ Participant[${i}] es un agent`);
