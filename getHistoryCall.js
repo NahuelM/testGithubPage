@@ -4,7 +4,6 @@ const REDIRECT_URI = window.location.origin + window.location.pathname;
 
 const contactId = 'e9b9652fc0d631a923250621708396fd';
 
-const platformClient = window.platformClient;
 const client = platformClient.ApiClient.instance;
 
 client.setEnvironment(region);
