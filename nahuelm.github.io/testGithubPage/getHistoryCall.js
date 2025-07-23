@@ -6,13 +6,47 @@ const contactId = 'e9b9652fc0d631a923250621708396fd';
 
 const client = platformClient.ApiClient.instance;
 
+let codeVerifier = localStorage.getItem('code_verifier');
 client.setEnvironment(REGION);
-client.loginOAuthCodePKCE(CLIENT_ID, REDIRECT_URI)
-  .then(() => getHistoryCalls(contactId))
-  .catch(err => {
-    document.getElementById("tabla").innerText = "Error en login: " + err;
-    console.error(err);
-  });
+async function login() {
+	codeVerifier = generateCodeVerifier();
+	const codeChallenge = await generateCodeChallenge(codeVerifier);
+
+	localStorage.setItem('code_verifier', codeVerifier);
+
+	const url = `https://login.${REGION}/oauth/authorize?` +
+		`client_id=${CLIENT_ID}` +
+		`&response_type=code` +
+		`&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+		`&code_challenge=${codeChallenge}` +
+		`&code_challenge_method=S256` +
+		`&state=xyz`;
+
+	window.location.href = url;
+}
+
+async function exchangeCodeForToken(code) {
+	const body = new URLSearchParams();
+	body.append('grant_type', 'authorization_code');
+	body.append('client_id', CLIENT_ID);
+	body.append('code', code);
+	body.append('redirect_uri', REDIRECT_URI);
+	body.append('code_verifier', codeVerifier);
+
+	const response = await fetch(`https://login.${REGION}/oauth/token`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+		body
+	});
+
+	const data = await response.json();
+	if (data.access_token) {
+		localStorage.setItem('access_token', data.access_token);
+		return data.access_token;
+	} else {
+		throw new Error('Error al obtener access token: ' + JSON.stringify(data));
+	}
+}
 
 async function getHistoryCalls(contactId) {
   const api = new platformClient.AnalyticsApi();
@@ -161,3 +195,19 @@ async function obtenerNombresAgentes(conv, usersApi) {
 
   return nombres.join(", ") || "-";
 }
+
+const urlParams = new URLSearchParams(window.location.search);
+if (urlParams.has('code')) {
+	const code = urlParams.get('code');
+	exchangeCodeForToken(code)
+		.then(() => {
+			history.replaceState(null, '', REDIRECT_URI); // Limpia la URL
+			alert('Login exitoso!');
+		})
+		.catch(err => alert('Error en login: ' + err.message));
+}
+
+(async () => {
+await login();
+await getHistoryCalls(contactId);
+})();
