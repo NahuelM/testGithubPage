@@ -207,4 +207,5 @@ if (urlParams.has('code')) {
 		.catch(err => alert('Error en login: ' + err.message));
 }
 
-login();
+await login();
+await getHistoryCalls(contactId);
