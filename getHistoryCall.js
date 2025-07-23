@@ -61,7 +61,7 @@ async function getHistoryCalls(contactId) {
     order: "desc",
     orderBy: "conversationStart",
     paging: { pageSize: 50, pageNumber: 1 },
-    interval: interval,
+    interval: "2025-07-01T03:00:00.000Z/2025-08-01T03:00:00.000Z",
     segmentFilters: [
       {
         type: "or",
