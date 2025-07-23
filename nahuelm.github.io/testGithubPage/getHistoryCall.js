@@ -207,18 +207,17 @@ if (urlParams.has('code')) {
 		.catch(err => alert('Error en login: ' + err.message));
 }
 
-if (!window.__alreadyRan) {
-	window.__alreadyRan = true;
+if (!localStorage.getItem('alreadyRan')) {
+	localStorage.setItem('alreadyRan', 'true');
 
 	(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const code = urlParams.get('code');
 
 		if (!code) {
-			await login(); // hace redirect
+			await login(); // redirige y vuelve
 		} else {
 			await getHistoryCalls(contactId);
 		}
 	})();
 }
-
