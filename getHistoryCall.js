@@ -6,7 +6,7 @@ const contactId = 'e9b9652fc0d631a923250621708396fd';
 
 const client = platformClient.ApiClient.instance;
 
-client.setEnvironment(region);
+client.setEnvironment(REGION);
 client.loginOAuthCodePKCE(CLIENT_ID, REDIRECT_URI)
   .then(() => getHistoryCalls(contactId))
   .catch(err => {
