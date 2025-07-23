@@ -117,6 +117,8 @@ async function formatearDatos(convs) {
 }
 
 function renderTabla(data) {
+	const contenedor = document.getElementById("tabla");
+  contenedor.innerHTML = ""; // ← limpia el contenido anterior
   new gridjs.Grid({
     columns: [
       'Conversation ID',
