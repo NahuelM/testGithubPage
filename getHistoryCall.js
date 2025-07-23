@@ -81,6 +81,7 @@ async function getHistoryCalls(contactId) {
 
   try {
     const response = await api.postAnalyticsConversationsDetailsQuery(query);
+		console.log(response);
     const data = await formatearDatos(response.conversations || []);
     renderTabla(data);
   } catch (err) {
