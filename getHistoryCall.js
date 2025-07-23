@@ -49,6 +49,8 @@ async function exchangeCodeForToken(code) {
 }
 
 async function getHistoryCalls(contactId) {
+	let access_token = localStorage.getItem('access_token');
+	client.setAccessToken(access_token)
   const api = new platformClient.AnalyticsApi();
   const now = new Date();
   const sixMonthsAgo = new Date(now);
