@@ -1,12 +1,9 @@
 const CLIENT_ID = 'a55b8a1e-58b5-47f0-b954-fbad359103ef';
 const REGION = 'sae1.pure.cloud';       
 const REDIRECT_URI = window.location.origin + window.location.pathname;
-
-
-console.log(window.location.href.split('?contactId=')[0]); // conserva el contactId
-
-
-
+const contactId = window.location.href.split('?contactId=')[1];
+console.log(contactId); 
+if (contactId) localStorage.setItem('contactId', contactId);
 //const contactId = 'e9b9652fc0d631a923250621708396fd';
 
 const client = platformClient.ApiClient.instance;
@@ -208,9 +205,7 @@ async function obtenerNombresAgentes(conv, usersApi) {
 
 console.log("hola");
 const urlParams = new URLSearchParams(window.location.search);
-const contactId = urlParams.get('contactId');
-console.log(contactId)
-if (contactId) localStorage.setItem('contactId', contactId);
+
 if (urlParams.has('code')) {
 	const code = urlParams.get('code');
 	exchangeCodeForToken(code)
@@ -226,8 +221,6 @@ if (!window.__alreadyRan) {
 
 	(async () => {
 		const code = urlParams.get('code');
-    
-
 		if (!code) {
 			await login(); // hace redirect
 		} else {
