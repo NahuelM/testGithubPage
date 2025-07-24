@@ -220,12 +220,14 @@ if (!window.__alreadyRan) {
 	(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
     const contactId = urlParams.get('contactId');
+    console.log(contactId);
 		const code = urlParams.get('code');
+    
 
 		if (!code) {
 			await login(); // hace redirect
 		} else {
-      
+      console.log("2 :"+contactId)
 			await getHistoryCalls(contactId);
 		}
 	})();
