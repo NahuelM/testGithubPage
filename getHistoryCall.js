@@ -219,12 +219,13 @@ if (!window.__alreadyRan) {
 
 	(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
+    const contactId = urlParams.get('contactId');
 		const code = urlParams.get('code');
 
 		if (!code) {
 			await login(); // hace redirect
 		} else {
-      const contactId = urlParams.get('contactId');
+      
 			await getHistoryCalls(contactId);
 		}
 	})();
