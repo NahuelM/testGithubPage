@@ -135,7 +135,21 @@ function renderTabla(data) {
     search: true,
     sort: true,
     pagination: { enabled: true, limit: 10 },
-    resizable: true
+    resizable: true,
+    language: {
+      search: {
+        placeholder: 'Buscar...'
+      },
+      pagination: {
+        previous: 'Anterior',
+        next: 'Siguiente',
+        showing: 'Mostrando',
+        results: () => 'registros'
+      },
+      loading: 'Cargando...',
+      noRecordsFound: 'No se encontraron registros',
+      error: 'Ocurrió un error al cargar los datos'
+    }
   }).render(document.getElementById("tabla"));
 }
 
