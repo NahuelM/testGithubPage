@@ -227,7 +227,6 @@ if (urlParams.has('code')) {
 	exchangeCodeForToken(code)
 		.then(() => {
 			history.replaceState(null, '', REDIRECT_URI); // Limpia la URL
-			alert('Login exitoso!');
 		})
 		.catch(err => alert('Error en login: ' + err.message));
 }
