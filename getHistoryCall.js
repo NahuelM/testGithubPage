@@ -223,8 +223,6 @@ if (!window.__alreadyRan) {
 	window.__alreadyRan = true;
 
 	(async () => {
-		const urlParams = new URLSearchParams(window.location.search);
-    const contactId = urlParams.get('contactId');
     console.log(contactId);
 		const code = urlParams.get('code');
     
