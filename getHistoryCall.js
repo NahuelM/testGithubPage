@@ -2,8 +2,8 @@ const CLIENT_ID = 'a55b8a1e-58b5-47f0-b954-fbad359103ef';
 const REGION = 'sae1.pure.cloud';       
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 const contactId = window.location.href.split('?contactId=')[1];
-console.log(contactId); 
-if (contactId) localStorage.setItem('contactId', contactId);
+// console.log(contactId); 
+// if (contactId) localStorage.setItem('contactId', contactId);
 //const contactId = 'e9b9652fc0d631a923250621708396fd';
 
 const client = platformClient.ApiClient.instance;
@@ -22,7 +22,7 @@ async function login() {
 		`&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
 		`&code_challenge=${codeChallenge}` +
 		`&code_challenge_method=S256` +
-		`&state=xyz`;
+		`&state=${encodeURIComponent(contactId || '')}`;
 
 	window.location.href = url;
 }
@@ -208,6 +208,8 @@ const urlParams = new URLSearchParams(window.location.search);
 
 if (urlParams.has('code')) {
 	const code = urlParams.get('code');
+  const state = urlParams.get('state'); 
+  localStorage.setItem('contactId', state);
 	exchangeCodeForToken(code)
 		.then(() => {
 			history.replaceState(null, '', REDIRECT_URI); // Limpia la URL
@@ -224,6 +226,7 @@ if (!window.__alreadyRan) {
 		if (!code) {
 			await login(); // hace redirect
 		} else {
+      const contactId = localStorage.getItem('contactId');
 			await getHistoryCalls(contactId);
 		}
 	})();
