@@ -2,7 +2,9 @@ const CLIENT_ID = 'a55b8a1e-58b5-47f0-b954-fbad359103ef';
 const REGION = 'sae1.pure.cloud';       
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 
-const contactId = 'e9b9652fc0d631a923250621708396fd';
+
+
+//const contactId = 'e9b9652fc0d631a923250621708396fd';
 
 const client = platformClient.ApiClient.instance;
 
@@ -222,6 +224,7 @@ if (!window.__alreadyRan) {
 		if (!code) {
 			await login(); // hace redirect
 		} else {
+      const contactId = urlParams.get('contactId');
 			await getHistoryCalls(contactId);
 		}
 	})();
