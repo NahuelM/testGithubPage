@@ -3,7 +3,7 @@ const REGION = 'sae1.pure.cloud';
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 
 
-//const REDIRECT_URI = window.location.href.split('&code=')[0]; // conserva el contactId
+console.log(window.location.href.split('?contactId=')[0]); // conserva el contactId
 
 
 
@@ -206,8 +206,10 @@ async function obtenerNombresAgentes(conv, usersApi) {
   return nombres.join(", ") || "-";
 }
 
+console.log("hola");
 const urlParams = new URLSearchParams(window.location.search);
 const contactId = urlParams.get('contactId');
+console.log(contactId)
 if (contactId) localStorage.setItem('contactId', contactId);
 if (urlParams.has('code')) {
 	const code = urlParams.get('code');
@@ -223,14 +225,12 @@ if (!window.__alreadyRan) {
 	window.__alreadyRan = true;
 
 	(async () => {
-    console.log(contactId);
 		const code = urlParams.get('code');
     
 
 		if (!code) {
 			await login(); // hace redirect
 		} else {
-      console.log("2 :"+contactId)
 			await getHistoryCalls(contactId);
 		}
 	})();
