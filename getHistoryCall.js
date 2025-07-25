@@ -110,6 +110,7 @@ async function formatearDatos(convs) {
       tTalk,
       dnis,
       wrapups.codes,
+      gridjs.html(`<span title="${wrapups.codes}">${wrapups.codes}</span>`),
       agentes,
       wrapups.notes
     ];
@@ -217,7 +218,7 @@ async function obtenerNombresAgentes(conv, usersApi) {
   return nombres.join(", ") || "-";
 }
 
-console.log("hola");
+
 const urlParams = new URLSearchParams(window.location.search);
 
 if (urlParams.has('code')) {
