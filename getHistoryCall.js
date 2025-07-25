@@ -109,7 +109,6 @@ async function formatearDatos(convs) {
       fecha,
       tTalk,
       dnis,
-      wrapups.codes,
       gridjs.html(`<span title="${wrapups.codes}">${wrapups.codes}</span>`),
       agentes,
       wrapups.notes
