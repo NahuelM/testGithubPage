@@ -17,7 +17,17 @@
 
   <style>
     body { font-family: sans-serif; padding: 2rem; }
-    #tabla { margin-top: 2rem; }
+    #tabla { 
+      max-width: 100%;
+      overflow-x: auto;}
+    .gridjs td, .gridjs th {
+      padding: 4px 8px !important; /* Achica altura y margen */
+      font-size: 12px !important;  /* Reduce tamaño de fuente */
+    }
+
+    .gridjs .gridjs-container {
+      font-size: 12px !important;
+    }
   </style>
 </head>
 <body>
