@@ -110,8 +110,8 @@ function buildTable(callbacks) {
     const wrapups = obtenerWrapupsDeAgentes(cb.participants)
     console.log(wrapups);
     const queue = contact.sessions[0].segments[0].queueId;
-    const wrapup_code = wrapups.map(w => w.wrapupCode ?? "-").join(", ");
-    const notes = wrapups.map(w => w.wrapupNotes ?? "-").join(", ");
+    const wrapup_code = wrapups.map(w => w.wrapUpCode ?? "-").join(", ");
+    const notes = wrapups.map(w => w.wrapUpNotes ?? "-").join(", ");
 
     return [
       contactName,
