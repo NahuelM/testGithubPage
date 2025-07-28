@@ -99,7 +99,7 @@ function buildTable(callbacks) {
     return;
   }
 
-  const rows = callbacks.map(cb => {
+  const rows = callbacks.map(async cb => {
     const startDate = cb.conversationStart;
     const agents = cb.participants?.filter(p => p.purpose === "agent") || [];
     const contact = agents[agents.length - 1] || {};
@@ -122,11 +122,11 @@ function buildTable(callbacks) {
     ?  validSessions[0].callbackUserName 
     : "Sin nombre";
 
-    const campaing = getCampaignName(contact.sessions[0].outboundCampaignId, token) || "Sin nombre";
+    const campaing = await getCampaignName(contact.sessions[0].outboundCampaignId, token) || "Sin nombre";
     const wrapups = obtenerWrapupsDeAgentes(cb.participants)
     console.log(wrapups);
-    wrapups = resolveWrapupObjects(wrapups, token);
-    const queue = getQueueName(contact.sessions[0].segments[0].queueId, token);
+    wrapups = await resolveWrapupObjects(wrapups, token);
+    const queue = await getQueueName(contact.sessions[0].segments[0].queueId, token);
     const wrapup_code = wrapups.map(w => w.wrapUpCode ?? "-").join(", ");
     const notes = wrapups.map(w => w.wrapUpNote ?? "-").join(", ");
 
