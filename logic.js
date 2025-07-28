@@ -93,7 +93,7 @@ async function getCallbacks(userId) {
 
 function buildTable(callbacks) {
   const output = document.getElementById('output');
-
+  let routingApi = new platformClient.RoutingApi();
   if (!callbacks.length) {
     output.innerHTML = 'No hay callbacks activos.';
     return;
@@ -125,9 +125,10 @@ function buildTable(callbacks) {
     const campaing = contact.sessions[0].outboundCampaignId || "Sin nombre";
     const wrapups = obtenerWrapupsDeAgentes(cb.participants)
     console.log(wrapups);
+    wrapups = resolveWrapupObjects(wrapups, routingApi);
     const queue = contact.sessions[0].segments[0].queueId;
     const wrapup_code = wrapups.map(w => w.wrapUpCode ?? "-").join(", ");
-    const notes = wrapups.map(w => w.wrapUpNotes ?? "-").join(", ");
+    const notes = wrapups.map(w => w.wrapUpNote ?? "-").join(", ");
 
     return [
       contactName,
@@ -277,6 +278,37 @@ function iniciarTemporizador(timerElement, button) {
     }
   }, 1000);
 }
+
+async function resolveWrapupObjects(wrapupObjects, apiInstance) {
+  const cache = new Map();
+  const isId = (code) => /^[a-zA-Z0-9\-]{8,}$/.test(code);
+
+  const resolved = await Promise.all(
+    wrapupObjects.map(async ({ wrapUpCode, wrapUpNote }) => {
+      if (!isId(wrapUpCode)) {
+        return { wrapUpCode, wrapUpNote };
+      }
+
+      if (cache.has(wrapUpCode)) {
+        return { wrapUpCode: cache.get(wrapUpCode), wrapUpNote };
+      }
+
+      try {
+        const result = await apiInstance.getRoutingWrapupcode(wrapUpCode);
+        const name = result.name || wrapUpCode;
+        cache.set(wrapUpCode, name);
+        return { wrapUpCode: name, wrapUpNote };
+      } catch (error) {
+        console.error(`Error resolving wrapUpCode "${wrapUpCode}":`, error.message);
+        cache.set(wrapUpCode, wrapUpCode);
+        return { wrapUpCode, wrapUpNote };
+      }
+    })
+  );
+
+  return resolved;
+}
+
 
 
 async function obtenerMiPerfil() {
