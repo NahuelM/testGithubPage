@@ -88,7 +88,7 @@ async function getCallbacks(userId) {
   });
 
   const data = await res.json();
-  buildTable(data.conversations || []);
+  await buildTable(data.conversations || []);
 }
 
 async function buildTable(callbacks) {
@@ -309,6 +309,7 @@ async function resolveWrapupObjects(wrapupObjects, accessToken) {
         const data = await response.json();
         const name = data.name || wrapUpCode;
 
+        console.log("ACAA:: "+{ wrapUpCode: name, wrapUpNote })
         cache.set(wrapUpCode, name);
         return { wrapUpCode: name, wrapUpNote };
       } catch (error) {
