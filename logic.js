@@ -92,8 +92,8 @@ async function getCallbacks(userId) {
 }
 
 function buildTable(callbacks) {
+  const token = localStorage.getItem('access_token');
   const output = document.getElementById('output');
-  let routingApi = new platformClient.RoutingApi();
   if (!callbacks.length) {
     output.innerHTML = 'No hay callbacks activos.';
     return;
@@ -122,11 +122,11 @@ function buildTable(callbacks) {
     ?  validSessions[0].callbackUserName 
     : "Sin nombre";
 
-    const campaing = contact.sessions[0].outboundCampaignId || "Sin nombre";
+    const campaing = getCampaignName(contact.sessions[0].outboundCampaignId, token) || "Sin nombre";
     const wrapups = obtenerWrapupsDeAgentes(cb.participants)
     console.log(wrapups);
-    wrapups = resolveWrapupObjects(wrapups, routingApi);
-    const queue = contact.sessions[0].segments[0].queueId;
+    wrapups = resolveWrapupObjects(wrapups, token);
+    const queue = getQueueName(contact.sessions[0].segments[0].queueId, token);
     const wrapup_code = wrapups.map(w => w.wrapUpCode ?? "-").join(", ");
     const notes = wrapups.map(w => w.wrapUpNote ?? "-").join(", ");
 
@@ -279,7 +279,7 @@ function iniciarTemporizador(timerElement, button) {
   }, 1000);
 }
 
-async function resolveWrapupObjects(wrapupObjects, apiInstance) {
+async function resolveWrapupObjects(wrapupObjects, accessToken) {
   const cache = new Map();
   const isId = (code) => /^[a-zA-Z0-9\-]{8,}$/.test(code);
 
@@ -294,13 +294,26 @@ async function resolveWrapupObjects(wrapupObjects, apiInstance) {
       }
 
       try {
-        const result = await apiInstance.getRoutingWrapupcode(wrapUpCode);
-        const name = result.name || wrapUpCode;
+        const response = await fetch(`https://api.${REGION}/api/v2/routing/wrapupcodes/${wrapUpCode}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const name = data.name || wrapUpCode;
+
         cache.set(wrapUpCode, name);
         return { wrapUpCode: name, wrapUpNote };
       } catch (error) {
-        console.error(`Error resolving wrapUpCode "${wrapUpCode}":`, error.message);
-        cache.set(wrapUpCode, wrapUpCode);
+        console.error(`Error fetching wrapUpCode "${wrapUpCode}":`, error.message);
+        cache.set(wrapUpCode, wrapUpCode); // fallback
         return { wrapUpCode, wrapUpNote };
       }
     })
@@ -309,6 +322,45 @@ async function resolveWrapupObjects(wrapupObjects, apiInstance) {
   return resolved;
 }
 
+async function getQueueName(queueId, accessToken) {
+  const url = `https://api.${REGION}/api/v2/routing/queues/${encodeURIComponent(queueId)}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener la cola: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.name;
+}
+
+async function getCampaignName(campaignId, accessToken) {
+  const url = `https://api.${REGION}/api/v2/outbound/campaigns/divisionviews/${encodeURIComponent(campaignId)}`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Authorization": `Bearer ${accessToken}`,
+      "Content-Type": "application/json"
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener la campaña: ${response.status} - ${errorText}`);
+  }
+
+  const data = await response.json();
+  return data.name;
+}
 
 
 async function obtenerMiPerfil() {
