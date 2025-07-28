@@ -123,9 +123,9 @@ async function buildTable(callbacks) {
     : "Sin nombre";
 
     const campaing = await getCampaignName(contact.sessions[0].outboundCampaignId, token) || "Sin nombre";
-    const wrapups = obtenerWrapupsDeAgentes(cb.participants)
+    let wrapups = obtenerWrapupsDeAgentes(cb.participants)
     console.log(wrapups);
-    await resolveWrapupObjects(wrapups, token); // cambia los id por los nombres
+    wrapups = await resolveWrapupObjects(wrapups, token); // cambia los id por los nombres
     const queue = await getQueueName(contact.sessions[0].segments[0].queueId, token);
     const wrapup_code = wrapups.map(w => w.wrapUpCode ?? "-").join(", ");
     const notes = wrapups.map(w => w.wrapUpNote ?? "-").join(", ");
