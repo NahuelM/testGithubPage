@@ -91,7 +91,7 @@ async function getCallbacks(userId) {
   buildTable(data.conversations || []);
 }
 
-function buildTable(callbacks) {
+async function buildTable(callbacks) {
   const token = localStorage.getItem('access_token');
   const output = document.getElementById('output');
   if (!callbacks.length) {
@@ -99,7 +99,7 @@ function buildTable(callbacks) {
     return;
   }
 
-  const rows = callbacks.map(async cb => {
+  const rows = await Promise.all(callbacks.map(async cb => {
     const startDate = cb.conversationStart;
     const agents = cb.participants?.filter(p => p.purpose === "agent") || [];
     const contact = agents[agents.length - 1] || {};
@@ -146,7 +146,7 @@ function buildTable(callbacks) {
         <span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
       `)
     ];
-  });
+  }));
 
   // Destruir tabla anterior si existe
   if (window.gridInstance) {
