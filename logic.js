@@ -312,7 +312,7 @@ async function resolveWrapupObjects(wrapupObjects, accessToken) {
         const data = await response.json();
         const name = data.name || wrapUpCode;
 
-        console.log("ACAA:: "+{ wrapUpCode: name, wrapUpNote })
+        console.log("ACAA:: "+JSON.stringify({ wrapUpCode: name, wrapUpNote }))
         cache.set(wrapUpCode, name);
         return { wrapUpCode: name, wrapUpNote };
       } catch (error) {
