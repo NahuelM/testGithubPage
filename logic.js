@@ -280,16 +280,19 @@ function iniciarTemporizador(timerElement, button) {
 }
 
 async function resolveWrapupObjects(wrapupObjects, accessToken) {
+  console.warn("ENTRA A FUNC BUSCADA:::  ")
   const cache = new Map();
   const isId = (code) => /^[a-zA-Z0-9\-]{8,}$/.test(code);
 
   const resolved = await Promise.all(
     wrapupObjects.map(async ({ wrapUpCode, wrapUpNote }) => {
       if (!isId(wrapUpCode)) {
+        console.warn("no es un ID ");
         return { wrapUpCode, wrapUpNote };
       }
 
       if (cache.has(wrapUpCode)) {
+        console.warn("ID en cache ");
         return { wrapUpCode: cache.get(wrapUpCode), wrapUpNote };
       }
 
