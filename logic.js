@@ -103,9 +103,25 @@ function buildTable(callbacks) {
     const startDate = cb.conversationStart;
     const agents = cb.participants?.filter(p => p.purpose === "agent") || [];
     const contact = agents[agents.length - 1] || {};
-    const contactName = contact.sessions[0].outboundContactId || "Sin nombre";
-    const phones = contact.sessions[0].callbackNumbers[0] || "N/A";
-    const date = contact.sessions[0].callbackScheduledTime;
+    
+
+    const validSessions = contact.sessions
+        .filter(s => s.callbackScheduledTime)  // Solo sesiones con callback programado
+        .sort((a, b) => new Date(a.callbackScheduledTime) - new Date(b.callbackScheduledTime)); // De más vieja a más nueva
+
+    const phones = validSessions.length > 0 && validSessions[0].callbackNumbers?.[0] 
+      ? validSessions[0].callbackNumbers[0] 
+      : "N/A";
+
+
+    const date = validSessions.length > 0 && validSessions[0].callbackScheduledTime
+      ? validSessions[0].callbackScheduledTime
+      : "N/A";
+
+    const contactName = validSessions.length > 0 && validSessions[0]
+    ?  validSessions[0].callbackUserName 
+    : "Sin nombre";
+
     const campaing = contact.sessions[0].outboundCampaignId || "Sin nombre";
     const wrapups = obtenerWrapupsDeAgentes(cb.participants)
     console.log(wrapups);
