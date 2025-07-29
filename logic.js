@@ -141,18 +141,11 @@ async function buildTable(callbacks) {
       notes,
       gridjs.html(`
       <div style="position: relative;">
-        <button onclick="abrirPopup('${cb.conversationId}')">⋮</button>
-        <div id="popup-${cb.conversationId}" class="popup-menu hidden">
-          <button onclick="reprogramar('${cb.conversationId}')">Reprogramar</button>
-          <div style="padding: 5px;">
-            <input type="datetime-local" id="calendar-${cb.conversationId}" style="width: 100%;">
-            <button style="margin-top: 5px;" onclick="reprogramarConFecha('${cb.conversationId}')">Confirmar</button>
-          </div>
-          <button onclick="cancelarCallback('${cb.conversationId}')">Cancelar</button>
-        </div>
+        <button onclick="abrirPopup('${cb.conversationId}', event)">⋮</button>
         <span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
       </div>
     `)
+
 
     ];
   }));
@@ -388,31 +381,42 @@ async function obtenerMiPerfil() {
 }
 
 
-function abrirPopup(conversationId) {
-  // Cierra otros popups
-  document.querySelectorAll('.popup-menu').forEach(p => {
-    p.classList.remove('show');
-    p.classList.add('hidden');
-  });
+function abrirPopup(conversationId, event) {
+  // Elimina cualquier popup visible
+  document.querySelectorAll('.popup-menu').forEach(p => p.remove());
 
-  const popup = document.getElementById(`popup-${conversationId}`);
-  if (!popup) return;
+  const popup = document.createElement('div');
+  popup.className = 'popup-menu show';
+  popup.innerHTML = `
+    <button onclick="reprogramar('${conversationId}')">Reprogramar</button>
+    <div style="padding: 5px;">
+      <input type="datetime-local" id="calendar-${conversationId}" style="width: 100%;">
+      <button style="margin-top: 5px;" onclick="reprogramarConFecha('${conversationId}')">Confirmar</button>
+    </div>
+    <button onclick="cancelarCallback('${conversationId}')">Cancelar</button>
+  `;
 
-  const triggerButton = event.currentTarget;
-  const rect = triggerButton.getBoundingClientRect();
+  document.body.appendChild(popup);
 
-  popup.style.top = `${rect.bottom + window.scrollY}px`;
+  const rect = event.currentTarget.getBoundingClientRect();
+  const spaceBelow = window.innerHeight - rect.bottom;
+  const spaceAbove = rect.top;
+  const popupHeight = 160;
+
+  const drawAbove = spaceBelow < popupHeight && spaceAbove > popupHeight;
+  popup.style.position = 'absolute';
   popup.style.left = `${rect.left + window.scrollX}px`;
-  popup.classList.remove('hidden');
 
-  // Forzar animación
-  requestAnimationFrame(() => popup.classList.add('show'));
+  if (drawAbove) {
+    popup.style.top = `${rect.top + window.scrollY - popupHeight}px`;
+  } else {
+    popup.style.top = `${rect.bottom + window.scrollY}px`;
+  }
 
-  // Cerrar al hacer clic fuera
+  // Cierra al hacer clic fuera
   const handleClickOutside = (e) => {
-    if (!popup.contains(e.target) && e.target !== triggerButton) {
-      popup.classList.remove('show');
-      popup.classList.add('hidden');
+    if (!popup.contains(e.target) && e.target !== event.currentTarget) {
+      popup.remove();
       document.removeEventListener('click', handleClickOutside);
     }
   };
@@ -421,6 +425,7 @@ function abrirPopup(conversationId) {
     document.addEventListener('click', handleClickOutside);
   }, 0);
 }
+
 
 function reprogramarConFecha(conversationId) {
   const input = document.getElementById(`calendar-${conversationId}`);
