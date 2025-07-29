@@ -109,7 +109,7 @@ async function formatearDatos(convs) {
       dnis,
       gridjs.html(`<span title="${resolvedCodes.join(", ")}">${resolvedCodes.join(", ")}</span>`),
       agentes,
-      wrapups.notes.join(", ")
+      wrapups.notes
     ];
   }));
 
