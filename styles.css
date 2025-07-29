@@ -114,9 +114,6 @@ button:disabled {
 
 
 .popup-menu {
-  position: fixed;
-  top: 100px; /* se ajustará dinámicamente en JS */
-  left: 100px;
   background: white;
   border: 1px solid #ccc;
   border-radius: 6px;
@@ -127,7 +124,20 @@ button:disabled {
   flex-direction: column;
   min-width: 200px;
   color: #222;
+
+  opacity: 0;
+  transform: scale(0.9);
+  transition: all 0.15s ease-out;
+  transform-origin: top left;
+  pointer-events: none;
 }
+
+.popup-menu.show {
+  opacity: 1;
+  transform: scale(1);
+  pointer-events: auto;
+}
+
 
 .popup-menu button {
   padding: 10px;
@@ -147,20 +157,3 @@ button:disabled {
 .hidden {
   display: none !important;
 }
-
-
-
-.popup-menu {
-  /* lo anterior se mantiene */
-  opacity: 0;
-  transform: scale(0.95);
-  transition: all 0.15s ease-out;
-  pointer-events: none;
-}
-
-.popup-menu.show {
-  opacity: 1;
-  transform: scale(1);
-  pointer-events: auto;
-}
-

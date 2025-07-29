@@ -382,11 +382,11 @@ async function obtenerMiPerfil() {
 
 
 function abrirPopup(conversationId, event) {
-  // Elimina cualquier popup visible
+  // Eliminar otros popups
   document.querySelectorAll('.popup-menu').forEach(p => p.remove());
 
   const popup = document.createElement('div');
-  popup.className = 'popup-menu show';
+  popup.className = 'popup-menu';
   popup.innerHTML = `
     <button onclick="reprogramar('${conversationId}')">Reprogramar</button>
     <div style="padding: 5px;">
@@ -399,21 +399,33 @@ function abrirPopup(conversationId, event) {
   document.body.appendChild(popup);
 
   const rect = event.currentTarget.getBoundingClientRect();
-  const spaceBelow = window.innerHeight - rect.bottom;
-  const spaceAbove = rect.top;
+  const popupWidth = 220;
   const popupHeight = 160;
 
-  const drawAbove = spaceBelow < popupHeight && spaceAbove > popupHeight;
-  popup.style.position = 'absolute';
-  popup.style.left = `${rect.left + window.scrollX}px`;
+  let left = rect.left + window.scrollX;
+  let top = rect.bottom + window.scrollY;
 
-  if (drawAbove) {
-    popup.style.top = `${rect.top + window.scrollY - popupHeight}px`;
-  } else {
-    popup.style.top = `${rect.bottom + window.scrollY}px`;
+  // Si se sale por la derecha
+  if (left + popupWidth > window.innerWidth) {
+    left = window.innerWidth - popupWidth - 10;
   }
 
-  // Cierra al hacer clic fuera
+  // Si se sale por abajo
+  if (top + popupHeight > window.scrollY + window.innerHeight) {
+    const spaceAbove = rect.top;
+    if (spaceAbove > popupHeight) {
+      top = rect.top + window.scrollY - popupHeight;
+    }
+  }
+
+  popup.style.position = 'absolute';
+  popup.style.left = `${left}px`;
+  popup.style.top = `${top}px`;
+
+  // Activa animación
+  requestAnimationFrame(() => popup.classList.add('show'));
+
+  // Cerrar al hacer clic fuera
   const handleClickOutside = (e) => {
     if (!popup.contains(e.target) && e.target !== event.currentTarget) {
       popup.remove();
