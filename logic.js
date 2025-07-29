@@ -144,12 +144,16 @@ async function buildTable(callbacks) {
         <button onclick="abrirPopup('${cb.conversationId}')">⋮</button>
         <div id="popup-${cb.conversationId}" class="popup-menu hidden">
           <button onclick="reprogramar('${cb.conversationId}')">Reprogramar</button>
-          <button onclick="abrirCalendario('${cb.conversationId}')">Reprogramar con fecha</button>
+          <div style="padding: 5px;">
+            <input type="datetime-local" id="calendar-${cb.conversationId}" style="width: 100%;">
+            <button style="margin-top: 5px;" onclick="reprogramarConFecha('${cb.conversationId}')">Confirmar</button>
+          </div>
           <button onclick="cancelarCallback('${cb.conversationId}')">Cancelar</button>
         </div>
         <span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
       </div>
     `)
+
     ];
   }));
 
@@ -385,17 +389,29 @@ async function obtenerMiPerfil() {
 
 
 function abrirPopup(conversationId) {
-  // Cierra otros popups si hay
-  document.querySelectorAll('.popup-menu').forEach(p => p.classList.add('hidden'));
+  // Cierra otros popups
+  document.querySelectorAll('.popup-menu').forEach(p => {
+    p.classList.remove('show');
+    p.classList.add('hidden');
+  });
 
   const popup = document.getElementById(`popup-${conversationId}`);
-  if (popup) {
-    popup.classList.toggle('hidden');
-  }
+  if (!popup) return;
 
-  // Cierra al hacer click fuera
+  const triggerButton = event.currentTarget;
+  const rect = triggerButton.getBoundingClientRect();
+
+  popup.style.top = `${rect.bottom + window.scrollY}px`;
+  popup.style.left = `${rect.left + window.scrollX}px`;
+  popup.classList.remove('hidden');
+
+  // Forzar animación
+  requestAnimationFrame(() => popup.classList.add('show'));
+
+  // Cerrar al hacer clic fuera
   const handleClickOutside = (e) => {
-    if (!popup.contains(e.target)) {
+    if (!popup.contains(e.target) && e.target !== triggerButton) {
+      popup.classList.remove('show');
       popup.classList.add('hidden');
       document.removeEventListener('click', handleClickOutside);
     }
@@ -405,6 +421,20 @@ function abrirPopup(conversationId) {
     document.addEventListener('click', handleClickOutside);
   }, 0);
 }
+
+function reprogramarConFecha(conversationId) {
+  const input = document.getElementById(`calendar-${conversationId}`);
+  const fechaSeleccionada = input?.value;
+
+  if (!fechaSeleccionada) {
+    alert("Selecciona una fecha antes de confirmar.");
+    return;
+  }
+
+  // ⚠️ Lógica futura: enviar PATCH con `fechaSeleccionada`
+  console.log(`🔁 Reprogramar ${conversationId} para ${fechaSeleccionada}`);
+}
+
 
 function abrirCalendario(conversationId) {
   // Esta función luego abrirá un calendar date picker
