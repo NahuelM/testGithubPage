@@ -101,7 +101,10 @@ async function formatearDatos(convs) {
     const agentes = await obtenerNombresAgentes(conv, usersApi);
     const wrapups = obtenerWrapups(conv);
     const accessToken = localStorage.getItem('access_token');
+    console.log("Antes: "+wrapups.notes);
     const resolvedCodes = await resolveWrapupCodesArray(wrapups.codes.split(", "), accessToken);
+
+    console.log("Despues: "+wrapups.notes);
     return [
       conv.conversationId,
       fecha,
