@@ -107,10 +107,22 @@ function renderQueueList(containerId, queues, buttonText, buttonHandler) {
     li.textContent = queue.name;
     const btn = document.createElement('button');
     btn.textContent = buttonText;
-    btn.onclick = () => buttonHandler(queue);
+    btn.onclick = async () => {
+			disableAllButtonsTemporarily(1000);
+			await buttonHandler(queue);
+		};
     li.appendChild(btn);
     ul.appendChild(li);
   });
 }
+
+function disableAllButtonsTemporarily(ms) {
+  const buttons = document.querySelectorAll('button');
+  buttons.forEach(btn => btn.disabled = true);
+  setTimeout(() => {
+    buttons.forEach(btn => btn.disabled = false);
+  }, ms);
+}
+
 
 init();
