@@ -378,14 +378,43 @@ async function obtenerMiPerfil() {
   return data.id; 
 }
 
-document.getElementById('login').addEventListener('click', login);
-document.getElementById('getCallbacks').addEventListener('click', async () => {
-  let userId = urlParams.get('userId'); // primero intenta desde la URL
+// document.getElementById('login').addEventListener('click', login);
+// document.getElementById('getCallbacks').addEventListener('click', async () => {
+//   let userId = urlParams.get('userId'); // primero intenta desde la URL
+//   if (!userId) {
+//     userId = await obtenerMiPerfil();   // si no hay, toma el del usuario autenticado
+//   }
+//   getCallbacks(userId);
+// });
+
+(async () => {
+  const urlParams = new URLSearchParams(window.location.search);
+
+  if (urlParams.has('code')) {
+    const code = urlParams.get('code');
+    try {
+      await exchangeCodeForToken(code);
+      history.replaceState(null, '', REDIRECT_URI); // Limpia la URL
+    } catch (err) {
+      alert('Error en login: ' + err.message);
+      return;
+    }
+  }
+
+  // Si no hay token, inicia login automáticamente
+  if (!localStorage.getItem('access_token')) {
+    await login();
+    return;
+  }
+
+  // Ya hay token, ahora obtenemos userId y callbacks
+  let userId = urlParams.get('userId');
   if (!userId) {
-    userId = await obtenerMiPerfil();   // si no hay, toma el del usuario autenticado
+    userId = await obtenerMiPerfil();
   }
   getCallbacks(userId);
-});
+})();
+
 
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('code')) {
