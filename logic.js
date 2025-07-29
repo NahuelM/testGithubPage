@@ -366,7 +366,6 @@ async function getCampaignName(campaignId, accessToken) {
   return data.name;
 }
 
-
 async function obtenerMiPerfil() {
   const token = localStorage.getItem('access_token');
   const response = await fetch(`https://api.${REGION}/api/v2/users/me`, {
@@ -379,7 +378,6 @@ async function obtenerMiPerfil() {
   return data.id; 
 }
 
-
 document.getElementById('login').addEventListener('click', login);
 document.getElementById('getCallbacks').addEventListener('click', async () => {
   let userId = urlParams.get('userId'); // primero intenta desde la URL
@@ -388,7 +386,6 @@ document.getElementById('getCallbacks').addEventListener('click', async () => {
   }
   getCallbacks(userId);
 });
-
 
 const urlParams = new URLSearchParams(window.location.search);
 if (urlParams.has('code')) {

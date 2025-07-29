@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Colas del Usuario</title>
+  <link rel="stylesheet" href="style.css">
+	<!-- Genesys Cloud SDK -->
+	<script src="https://sdk-cdn.mypurecloud.com/javascript/227.0.0/purecloud-platform-client-v2.min.js"></script>
+	<script type="text/javascript">
+	// Obtain a reference to the platformClient object
+	const platformClient = require('platformClient');
+	</script>
+</head>
+<body>
+  <h1>Colas del Usuario</h1>
+  <div id="user-info"></div>
+  <div class="container">
+    <div class="queue-list">
+      <h2>Colas Activas</h2>
+      <ul id="active-queues"></ul>
+    </div>
+    <div class="queue-list">
+      <h2>Colas Inactivas</h2>
+      <ul id="inactive-queues"></ul>
+    </div>
+  </div>
+  <script src="activateQueues.js"></script>
+</body>
+</html>

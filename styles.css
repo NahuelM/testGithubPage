@@ -63,3 +63,43 @@ margin-top: 20px;
 font-size: 14px;
 color: #333;
 }
+body {
+  font-family: sans-serif;
+  margin: 20px;
+  background-color: #f0f2f5;
+}
+
+h1 {
+  text-align: center;
+}
+
+.container {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 30px;
+}
+
+.queue-list {
+  width: 45%;
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+}
+
+li {
+  margin: 10px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+button {
+  padding: 5px 10px;
+  cursor: pointer;
+}
