@@ -80,18 +80,23 @@ async function startApp() {
   let activeQueue = queues.entities.find(q => q.joined);
   const inactiveQueues = queues.entities.filter(q => !q.joined);
 
-  renderQueueList('active-queues', activeQueue ? [activeQueue] : [], 'Desactivar', async (queue) => {
-    await routingApi.patchUserQueues(userId, queue.id, { joined: false });
-    startApp(); // recargar listas
-  });
+	renderQueueList('active-queues', activeQueue ? [activeQueue] : [], 'Desactivar', async (queue) => {
+		await routingApi.patchRoutingUserQueues(userId, [
+			{ id: queue.id, joined: false }
+		], {});
+		startApp();
+	});
 
-  renderQueueList('inactive-queues', inactiveQueues, 'Activar', async (queue) => {
-    if (activeQueue) {
-      await routingApi.patchUserQueues(userId, activeQueue.id, { joined: false });
-    }
-    await routingApi.patchUserQueues(userId, queue.id, { joined: true });
-    startApp(); // recargar listas
-  });
+	renderQueueList('inactive-queues', inactiveQueues, 'Activar', async (queue) => {
+		const patchBody = [];
+		if (activeQueue) {
+			patchBody.push({ id: activeQueue.id, joined: false });
+		}
+		patchBody.push({ id: queue.id, joined: true });
+
+		await routingApi.patchRoutingUserQueues(userId, patchBody, {});
+		startApp();
+	});
 }
 
 function renderQueueList(containerId, queues, buttonText, buttonHandler) {
