@@ -81,7 +81,7 @@ async function startApp() {
   const inactiveQueues = queues.entities.filter(q => !q.joined);
 
 	renderQueueList('active-queues', activeQueue ? [activeQueue] : [], 'Desactivar', async (queue) => {
-		await routingApi.patchRoutingUserQueues(userId, [
+		await routingApi.patchUserQueues(userId, [
 			{ id: queue.id, joined: false }
 		], {});
 		startApp();
@@ -94,7 +94,7 @@ async function startApp() {
 		}
 		patchBody.push({ id: queue.id, joined: true });
 
-		await routingApi.patchRoutingUserQueues(userId, patchBody, {});
+		await routingApi.patchUserQueues(userId, patchBody, {});
 		startApp();
 	});
 }
