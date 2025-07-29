@@ -2,9 +2,6 @@ const CLIENT_ID = 'a55b8a1e-58b5-47f0-b954-fbad359103ef';
 const REGION = 'sae1.pure.cloud';       
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 const contactId = window.location.href.split('?contactId=')[1];
-// console.log(contactId); 
-// if (contactId) localStorage.setItem('contactId', contactId);
-//const contactId = 'e9b9652fc0d631a923250621708396fd';
 
 const client = platformClient.ApiClient.instance;
 
@@ -112,7 +109,7 @@ async function formatearDatos(convs) {
       dnis,
       gridjs.html(`<span title="${resolvedCodes.join(", ")}">${resolvedCodes.join(", ")}</span>`),
       agentes,
-      wrapups.notes
+      wrapups.notes.join(", ")
     ];
   }));
 
@@ -226,7 +223,8 @@ async function obtenerNombresAgentes(conv, usersApi) {
 
 async function resolveWrapupCodesArray(wrapUpCodes, accessToken) {
   const cache = new Map();
-  const isId = (code) => /^[a-zA-Z0-9\-]{8,}$/.test(code);
+  const isId = (code) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(code);
+
 
   const uniqueCodes = [...new Set(wrapUpCodes.filter(isId))];
 
