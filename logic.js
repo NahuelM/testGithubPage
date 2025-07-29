@@ -227,7 +227,14 @@ async function reprogramar(conversationId) {
   }
 
   const nuevaFecha = getNewDate();
-	const button = document.getElementById(`btn-${conversationId}`);
+	const popup = document.querySelector('.popup-menu');
+  const button = popup?.querySelector('button:nth-child(1)'); // Primer botón: Reprogramar
+
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Reprogramando...";
+  }
+
   const timerSpan = document.getElementById(`timer-${conversationId}`);
 
   button.disabled = true;
@@ -390,13 +397,20 @@ function abrirPopup(conversationId, event) {
   popup.innerHTML = `
     <button onclick="reprogramar('${conversationId}')">Reprogramar</button>
     <div style="padding: 5px;">
-      <input type="datetime-local" id="calendar-${conversationId}" style="width: 100%;">
-      <button style="margin-top: 5px;" onclick="reprogramarConFecha('${conversationId}')">Confirmar</button>
+      <input type="text" id="calendar-${conversationId}" class="calendar-picker" placeholder="Elegir fecha">
+      <button style="margin-top: 5px;" onclick="reprogramarConFlatpickr('${conversationId}')">Done ✅</button>
     </div>
     <button onclick="cancelarCallback('${conversationId}')">Cancelar</button>
   `;
 
   document.body.appendChild(popup);
+  flatpickr(`#calendar-${conversationId}`, {
+    enableTime: true,
+    dateFormat: "Y-m-d\\TH:i:S\\Z", // ISO format UTC
+    defaultDate: new Date(),
+    time_24hr: true
+  });
+
 
   const rect = event.currentTarget.getBoundingClientRect();
   const popupWidth = 220;
@@ -439,18 +453,23 @@ function abrirPopup(conversationId, event) {
 }
 
 
-function reprogramarConFecha(conversationId) {
+function reprogramarConFlatpickr(conversationId) {
   const input = document.getElementById(`calendar-${conversationId}`);
   const fechaSeleccionada = input?.value;
 
   if (!fechaSeleccionada) {
-    alert("Selecciona una fecha antes de confirmar.");
+    alert("Selecciona una fecha primero.");
     return;
   }
 
-  // ⚠️ Lógica futura: enviar PATCH con `fechaSeleccionada`
-  console.log(`🔁 Reprogramar ${conversationId} para ${fechaSeleccionada}`);
+  console.log(`Reprogramar ${conversationId} para ${fechaSeleccionada}`);
+
+  // Lógica futura: enviar PATCH
+  document.querySelectorAll('.popup-menu').forEach(p => p.remove());
+
+  // Podés llamar a reprogramarCallbackReal(conversationId, fechaSeleccionada);
 }
+
 
 
 function abrirCalendario(conversationId) {
