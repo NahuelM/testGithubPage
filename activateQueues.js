@@ -65,27 +65,31 @@ async function init() {
 
 async function startApp() {
   const usersApi = new platformClient.UsersApi();
-  const queuesApi = new platformClient.RoutingApi();
+  const routingApi = new platformClient.RoutingApi();
 
   const me = await usersApi.getUsersMe();
   const userId = me.id;
 
   document.getElementById("user-info").innerText = `Usuario: ${me.name}`;
+  let opts = { 
+  	"pageSize": 25,
+  	"pageNumber": 1
+	};
 
-  const queues = await queuesApi.getRoutingUserQueues(userId);
+  const queues = await routingApi.getUserQueues(userId, opts);
   let activeQueue = queues.entities.find(q => q.joined);
   const inactiveQueues = queues.entities.filter(q => !q.joined);
 
   renderQueueList('active-queues', activeQueue ? [activeQueue] : [], 'Desactivar', async (queue) => {
-    await queuesApi.patchRoutingUserQueue(userId, queue.id, { joined: false });
+    await routingApi.patchUserQueues(userId, queue.id, { joined: false });
     startApp(); // recargar listas
   });
 
   renderQueueList('inactive-queues', inactiveQueues, 'Activar', async (queue) => {
     if (activeQueue) {
-      await queuesApi.patchRoutingUserQueue(userId, activeQueue.id, { joined: false });
+      await routingApi.patchUserQueues(userId, activeQueue.id, { joined: false });
     }
-    await queuesApi.patchRoutingUserQueue(userId, queue.id, { joined: true });
+    await routingApi.patchUserQueues(userId, queue.id, { joined: true });
     startApp(); // recargar listas
   });
 }
