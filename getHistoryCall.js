@@ -103,13 +103,14 @@ async function formatearDatos(convs) {
     const dnis = obtenerDnis(conv);
     const agentes = await obtenerNombresAgentes(conv, usersApi);
     const wrapups = obtenerWrapups(conv);
-
+    const accessToken = localStorage.getItem('access_token');
+    const resolvedCodes = await resolveWrapupCodesArray(wrapups.codes.split(", "), accessToken);
     return [
       conv.conversationId,
       fecha,
       tTalk,
       dnis,
-      gridjs.html(`<span title="${wrapups.codes}">${wrapups.codes}</span>`),
+      gridjs.html(`<span title="${resolvedCodes.join(", ")}">${resolvedCodes.join(", ")}</span>`),
       agentes,
       wrapups.notes
     ];
@@ -162,7 +163,13 @@ function sumarTTalkComplete(conv) {
       }
     }
   }
-  return (total / 1000).toFixed(1);
+  const totalSeconds = Math.floor(total / 1000); // redondeamos hacia abajo
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  if (minutes > 0 && seconds > 0) return `${minutes}m ${seconds}s`;
+  if (minutes > 0) return `${minutes}m`;
+  return `${seconds}s`;
 }
 
 function obtenerDnis(conv) {
@@ -215,6 +222,45 @@ async function obtenerNombresAgentes(conv, usersApi) {
   }));
 
   return nombres.join(", ") || "-";
+}
+
+async function resolveWrapupCodesArray(wrapUpCodes, accessToken) {
+  const cache = new Map();
+  const isId = (code) => /^[a-zA-Z0-9\-]{8,}$/.test(code);
+
+  const uniqueCodes = [...new Set(wrapUpCodes.filter(isId))];
+
+  const resolvedNames = await Promise.all(
+    uniqueCodes.map(async (code) => {
+      if (cache.has(code)) return cache.get(code);
+
+      try {
+        const response = await fetch(`https://api.${REGION}/api/v2/routing/wrapupcodes/${code}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        const data = await response.json();
+        const name = data.name || code;
+        cache.set(code, name);
+        return name;
+      } catch (error) {
+        console.error(`Error fetching wrapUpCode "${code}":`, error.message);
+        cache.set(code, code); // fallback
+        return code;
+      }
+    })
+  );
+
+  // Map de code → name
+  const codeToName = Object.fromEntries(uniqueCodes.map((c, i) => [c, resolvedNames[i]]));
+
+  // Devuelve array original con nombres reemplazados si están en cache
+  return wrapUpCodes.map(code => codeToName[code] || code);
 }
 
 
