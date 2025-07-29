@@ -140,11 +140,16 @@ async function buildTable(callbacks) {
       wrapup_code,
       notes,
       gridjs.html(`
-        <button id="btn-${cb.conversationId}" onclick="reprogramar('${cb.conversationId}')">
-          Reprogramar
-        </button>
+      <div style="position: relative;">
+        <button onclick="abrirPopup('${cb.conversationId}')">⋮</button>
+        <div id="popup-${cb.conversationId}" class="popup-menu hidden">
+          <button onclick="reprogramar('${cb.conversationId}')">Reprogramar</button>
+          <button onclick="abrirCalendario('${cb.conversationId}')">Reprogramar con fecha</button>
+          <button onclick="cancelarCallback('${cb.conversationId}')">Cancelar</button>
+        </div>
         <span id="timer-${cb.conversationId}" style="margin-left: 10px; font-weight: bold;"></span>
-      `)
+      </div>
+    `)
     ];
   }));
 
@@ -378,14 +383,39 @@ async function obtenerMiPerfil() {
   return data.id; 
 }
 
-// document.getElementById('login').addEventListener('click', login);
-// document.getElementById('getCallbacks').addEventListener('click', async () => {
-//   let userId = urlParams.get('userId'); // primero intenta desde la URL
-//   if (!userId) {
-//     userId = await obtenerMiPerfil();   // si no hay, toma el del usuario autenticado
-//   }
-//   getCallbacks(userId);
-// });
+
+function abrirPopup(conversationId) {
+  // Cierra otros popups si hay
+  document.querySelectorAll('.popup-menu').forEach(p => p.classList.add('hidden'));
+
+  const popup = document.getElementById(`popup-${conversationId}`);
+  if (popup) {
+    popup.classList.toggle('hidden');
+  }
+
+  // Cierra al hacer click fuera
+  const handleClickOutside = (e) => {
+    if (!popup.contains(e.target)) {
+      popup.classList.add('hidden');
+      document.removeEventListener('click', handleClickOutside);
+    }
+  };
+
+  setTimeout(() => {
+    document.addEventListener('click', handleClickOutside);
+  }, 0);
+}
+
+function abrirCalendario(conversationId) {
+  // Esta función luego abrirá un calendar date picker
+  console.log(`🗓 Abrir calendario para: ${conversationId}`);
+}
+
+function cancelarCallback(conversationId) {
+  // Esta función luego cancelará el callback
+  console.log(`❌ Cancelar callback: ${conversationId}`);
+}
+
 
 (async () => {
   const urlParams = new URLSearchParams(window.location.search);
@@ -426,3 +456,6 @@ if (urlParams.has('code')) {
 		})
 		.catch(err => alert('Error en login: ' + err.message));
 }
+
+
+
