@@ -106,7 +106,6 @@ async function formatearDatos(convs) {
 
     console.log("Despues: "+wrapups.notes);
     return [
-      conv.conversationId,
       fecha,
       tTalk,
       dnis,
@@ -124,9 +123,8 @@ function renderTabla(data) {
   contenedor.innerHTML = ""; // ← limpia el contenido anterior
   new gridjs.Grid({
     columns: [
-      'Conversation ID',
       'Fecha (GMT-3)',
-      'tTalkComplete (s)',
+      'Duracion',
       'DNIS',
       'WrapUp Codes',
       'Agentes',
