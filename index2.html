@@ -110,59 +110,6 @@ const platformClient = require('platformClient');
     .addField('#ci', [{ rule:'required', errorMessage:'Obligatorio' }]);
   // agregar más campos aquí...
 
-	new gridjs.Grid({
-  columns: [
-    { 
-      name: 'Propiedad',
-      sort: false,
-      width: '40%'
-    },
-    { 
-      name: 'Valor',
-      sort: false,
-      width: '60%',
-      formatter: (cell, row, col) => {
-        // Si el valor debe ser editable (campo1, campo2, campo4)
-        const editableFields = ['Campo1', 'Campo2', 'Campo4'];
-        if (editableFields.includes(row.cells[0].data)) {
-          return gridjs.html(
-            `<input type="text" 
-                     value="${cell}" 
-                     data-field="${row.cells[0].data}" 
-                     style="width:90%; padding:4px; border-radius:3px; border:1px solid #A7A8AA;" />`
-          );
-        }
-        return cell;
-      }
-    }
-  ],
-  data: [
-    ['Campo1', 'valor1'],
-    ['Campo2', 'valor2'],
-    ['Campo3', 'valor3'],
-    ['Campo4', 'valor4'],
-    ['Campo5', 'valor5'],
-    ['Campo6', 'valor6'],
-    ['Campo7', 'valor7']
-  ],
-  pagination: false,
-  search: false,
-  sort: false,
-  style: {
-    table: {
-      fontSize: '0.9rem',
-      width: '100%'
-    },
-    td: {
-      padding: '6px 4px'
-    },
-    th: {
-      backgroundColor: '#E6F2F9',
-      color: '#0061A0',
-      textAlign: 'left'
-    }
-  }
-}).render(document.getElementById('gridjs-table'));
 
 
 
