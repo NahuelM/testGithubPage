@@ -309,15 +309,19 @@ if (!window.__alreadyRan) {
   })();
 }
 
-document.getElementById('Tipificar').onclick = () => {
+document.getElementById('Tipificar').onclick = (e) => {
+  e.preventDefault(); 
   const contactId = localStorage.getItem('contactId');
   const campaignId = localStorage.getItem('campaignId');
-  const participantId = localStorage.getItem('participantId')
-  const wrapupCode = "";
-  const wrapupName = "";
+  const participantId = localStorage.getItem('participantId');
+
+  const select = document.getElementById('wrapup');
+  const wrapupCode = select.value;
+  const wrapupName = select.options[select.selectedIndex].text;
 
   tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName);
 };
+
 
 //custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1
 async function getContactData(contactId, campaignId){
@@ -434,7 +438,7 @@ async function getWrapUpCodes(divisionId) {
   let actionId = "custom_-_6e05c5aa-46b4-468e-a3d6-24e6768ae4c1"; 
   let body = {"divisionId":divisionId}; 
   let opts = { 
-    "flatten": false 
+    "flatten": true 
   };
 
   apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
@@ -483,7 +487,7 @@ async function getUsersByDivision(divisionName) {
 }
 
 function createCallback(){
-  
+
 }
 
 
