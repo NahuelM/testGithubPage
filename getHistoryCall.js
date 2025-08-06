@@ -286,7 +286,99 @@ if (!window.__alreadyRan) {
 		} else {
       const contactId = localStorage.getItem('contactId');
 			await getHistoryCalls(contactId);
+      await getContactData(contactId, campaignId);
 		}
 	})();
 }
+
+//custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1
+async function getContactData(contactId, campaignId){
+  let apiIntegration = new platformClient.IntegrationsApi();
+  let actionId = "custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1"; 
+  let body = {"contactId":contactId,"campaignId":campaignId}; 
+  let opts = { 
+    "flatten": false 
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+  .then((data) => {
+    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
+    const editableFields = ['Direccion', 'Fecha Nacimiento', 'Telefono1', 'Telefono2'];
+    const tableData = parseMarkdownTable(data['body.markdownTable']);
+    renderEditableTable(tableData, editableFields);
+    autocompleteForm(data);
+  })
+  .catch((err) => {
+    console.log("There was a failure calling postIntegrationsActionExecute");
+    console.error(err);
+  });
+}
+
+
+
+  
+
+function parseMarkdownTable(md) {
+  const lines = md.trim().split('\n').slice(2); // quitamos cabecera y separadores
+  const data = lines.map(line => {
+    const parts = line.split('|').map(cell => cell.trim()).filter(Boolean);
+    return parts;
+  });
+  return data;
+}
+
+
+function renderEditableTable(data, editableFields) {
+  new gridjs.Grid({
+    columns: [
+      { name: 'Campo', sort: false },
+      {
+        name: 'Valor', sort: false,
+        formatter: (cell, row) => {
+          const campo = row.cells[0].data;
+          if (editableFields.includes(campo)) {
+            return gridjs.html(`
+              <input type="text" 
+                      value="${cell}" 
+                      data-campo="${campo}" 
+                      style="width:90%; padding:4px; border-radius:3px; border:1px solid #A7A8AA;" />
+            `);
+          }
+          return cell;
+        }
+      }
+    ],
+    data: data,
+    pagination: false,
+    search: false,
+    sort: false,
+    style: {
+      table: { fontSize: '0.9rem', width: '100%' },
+      td: { padding: '6px 4px' },
+      th: { backgroundColor: '#E6F2F9', color: '#0061A0', textAlign: 'left' }
+    }
+  }).render(document.getElementById('gridjs-table'));
+}
+
+
+function autocompleteForm(body) {
+  const formMap = {
+    nombres: body['body.nombre'] || '',
+    apellidos: body['body.apellido'] || '',
+    direccion: body['body.direccion'] || '',
+    localidad: body['body.localidad'] || '',
+    email: body['body.mail'] || '',
+    fechaNacimiento: body['body.birthDate'] || '',
+    telefono1: body['body.phoneValues']?.[0] || '',
+    telefono2: body['body.phoneValues']?.[1] || '',
+    telefono3: body['body.phoneValues']?.[2] || '',
+  };
+
+  Object.entries(formMap).forEach(([id, value]) => {
+    const el = document.getElementById(id);
+    if (el) el.value = value;
+  });
+}
+
+
 
