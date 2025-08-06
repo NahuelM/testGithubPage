@@ -391,7 +391,7 @@ function renderEditableTable(data, editableFields) {
           if (campo === 'TelefonoObtendio') {
             return gridjs.html(`
               <button onclick="accionTelefonoObtendio()" 
-                      style="background: none; border: none; cursor: pointer; padding: 4px;">
+                      style=" border: none; cursor: pointer; padding: 4px;">
                 <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <path d="M22 16.92V21a2 2 0 0 1-2.18 2A19.72 19.72 0 0 1 3 5.18 2 2 0 0 1 5 3h4.09a1 1 0 0 1 1 .75l1.38 5.52a1 1 0 0 1-.27.95L9.91 12.09a16 16 0 0 0 6 6l1.87-1.87a1 1 0 0 1 .95-.27l5.52 1.38a1 1 0 0 1 .75 1z"/>
                 </svg>
@@ -417,13 +417,24 @@ function renderEditableTable(data, editableFields) {
 function accionTelefonoObtendio() {
   const input = document.querySelector('input[data-campo="TelefonoObtendio"]');
   if (input) {
-    const valor = input.value;
-    console.log('Teléfono obtenido:', valor);
-    // Podés copiar al portapapeles, mostrar modal, llamar, etc.
-    navigator.clipboard.writeText(valor)
-      .then(() => alert("Teléfono copiado: " + valor))
-      .catch(err => console.error("Error al copiar:", err));
-  }
+    const phone = input.value;
+    let apiInstance = new platformClient.ConversationsApi();
+
+    let conversationId = sessionStorage.getItem("conversationId");
+    let body = {
+      "callNumber": phone,
+      "phoneColumn": "telefono obtenido"
+    };
+
+    apiInstance.postConversationsCall(conversationId, body)
+      .then((data) => {
+        console.log(`postConversationsCall success! data: ${JSON.stringify(data, null, 2)}`);
+      })
+      .catch((err) => {
+        console.log("There was a failure calling postConversationsCall");
+        console.error(err);
+      });
+    }
 }
 
 
