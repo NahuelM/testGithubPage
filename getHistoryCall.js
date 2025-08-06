@@ -279,7 +279,6 @@ const urlParams = new URLSearchParams(window.location.search);
 const code = urlParams.get('code');
 const rawState = urlParams.get('state');
 
-// Si venís del login con PKCE (con ?code=...), extraemos los parámetros del state y los guardamos
 if (code && rawState) {
   const stateParams = new URLSearchParams(decodeURIComponent(rawState));
   for (const [key, value] of stateParams.entries()) {
@@ -293,18 +292,19 @@ if (code && rawState) {
     .catch(err => alert('Error en login: ' + err.message));
 }
 
-// Si aún no logueamos, redirige a OAuth con el state preparado
 if (!window.__alreadyRan) {
   window.__alreadyRan = true;
 
   (async () => {
     if (!code) {
-      await login(); // redirige
+      await login(); 
     } else {
       const contactId = localStorage.getItem('contactId');
       const campaignId = localStorage.getItem('campaignId');
       await getHistoryCalls(contactId);
       await getContactData(contactId, campaignId);
+      await getWrapUpCodes("*");
+      await getUsersByDivision("Home");
     }
   })();
 }
@@ -401,5 +401,82 @@ function autocompleteForm(body) {
   });
 }
 
+//custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
+function tipificar() {
+  let apiIntegration = new platformClient.IntegrationsApi();
+  let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
+  let body = {"conversationId":contactId,
+              "participantId":campaignId, 
+              "participantId":participantId,
+              "wrapupCode":wrapupCode,
+              "wrapupName":wrapupName,
+              "note": note}; 
+  let opts = { 
+    "flatten": false 
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+  .then((data) => {
+    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
+  })
+  .catch((err) => {
+    console.log("There was a failure calling postIntegrationsActionExecute");
+    console.error(err);
+  });
+}
+
+//custom_-_6e05c5aa-46b4-468e-a3d6-24e6768ae4c1
+async function getWrapUpCodes(divisionId) {
+  let apiIntegration = new platformClient.IntegrationsApi();
+  let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
+  let body = {"divisionId":divisionId}; 
+  let opts = { 
+    "flatten": false 
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+  .then((data) => {
+    const wrapupSelect = document.getElementById('wrapup');
+    wrapupSelect.innerHTML = '<option value="" disabled selected>Seleccione un Wrap-Up</option>'; // limpiar y dejar default
+
+    data.entities.forEach(entity => {
+      const option = document.createElement('option');
+      option.value = entity.id;
+      option.textContent = entity.name;
+      wrapupSelect.appendChild(option);
+    });
+  })
+  .catch((err) => {
+    console.log("There was a failure calling postIntegrationsActionExecute");
+    console.error(err);
+  });
+}
+
+//custom_-_d0d53271-fbc5-43c9-9324-43935958a9d7
+async function getUsersByDivision(divisionName) {
+    let apiIntegration = new platformClient.IntegrationsApi();
+  let actionId = "custom_-_d0d53271-fbc5-43c9-9324-43935958a9d7"; 
+  let body = {"divisionName":divisionName}; 
+  let opts = { 
+    "flatten": false 
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+  .then((data) => {
+    const agentSelect = document.getElementById('wrapup');
+    agentSelect.innerHTML = '<option value="" disabled selected>Seleccione un Agente</option>'; // limpiar y dejar default
+
+    data.entities.forEach(entity => {
+      const option = document.createElement('option');
+      option.value = entity.ids;
+      option.textContent = entity.usernames;
+      agentSelect.appendChild(option);
+    });
+  })
+  .catch((err) => {
+    console.log("There was a failure calling postIntegrationsActionExecute");
+    console.error(err);
+  });
+}
 
 

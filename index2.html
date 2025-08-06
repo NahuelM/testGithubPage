@@ -87,9 +87,9 @@ const platformClient = require('platformClient');
 
   <div class="div5">
     <form id="wrapup-form">
-      <select id="wrapup" name="wrapup"><option value="" disabled selected>Wrapup Code</option><option value="venta">Venta</option><option value="no">No interesado</option></select>
+      <select id="wrapup" name="wrapup"></select>
       <textarea id="notas" name="notas" rows="4" placeholder="Notas..."></textarea>
-      <button type="submit">Guardar Wrapup</button>
+      <button type="submit">Tipificar</button>
     </form>
   </div>
 
@@ -97,7 +97,7 @@ const platformClient = require('platformClient');
     <form id="callback-form">
       <input type="datetime-local" id="callback-datetime" name="callback-datetime" />
       <label><input type="checkbox" id="dueno" name="dueno" /> Dueño</label>
-      <select id="motivo" name="motivo"><option value="" disabled selected>Motivo</option><option value="llamar">Llamar</option><option value="agendar">Agendar</option></select>
+      <select id="AgenteCall" name="AgenteCallback"></select>
       <button type="submit">Agendar Callback</button>
     </form>
   </div>
