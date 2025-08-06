@@ -56,7 +56,7 @@ async function getCallbacks(userId) {
     order: 'desc',
     orderBy: 'conversationStart',
     paging: { pageNumber: 1, pageSize: 10 },
-    interval: '2025-07-01T03:00:00.000Z/2025-07-31T03:00:00.000Z',
+    interval: '2025-08-01T03:00:00.000Z/2025-08-31T03:00:00.000Z',
     segmentFilters: [
       {
         type: 'and',
