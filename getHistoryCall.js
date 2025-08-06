@@ -359,7 +359,8 @@ function parseMarkdownTable(md) {
 
 function renderEditableTable(data, editableFields) {
   const container = document.getElementById('gridjs-table');
-  container.innerHTML = ''; // ⬅️ limpia antes de renderizar
+  container.innerHTML = ''; // Limpia antes de renderizar
+
   new gridjs.Grid({
     columns: [
       { name: 'Campo', sort: false },
@@ -370,12 +371,33 @@ function renderEditableTable(data, editableFields) {
           if (editableFields.includes(campo)) {
             return gridjs.html(`
               <input type="text" 
-                      value="${cell}" 
-                      data-campo="${campo}" 
-                      style="width:90%; padding:4px; border-radius:3px; border:1px solid #A7A8AA;" />
+                     value="${cell}" 
+                     data-campo="${campo}" 
+                     style="width:90%; padding:4px; border-radius:3px; border:1px solid #A7A8AA;" />
             `);
           }
           return cell;
+        }
+      },
+      {
+        name: '', // Header oculto o vacío
+        sort: false,
+        formatter: (_, row) => {
+          const campo = row.cells[0].data;
+          if (campo === 'TelefonoObtendio') {
+            return gridjs.html(`
+              <button style="
+                padding: 6px 10px;
+                background-color: #008EDD;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 0.8rem;
+              " onclick="alert('Botón de acción para TelefonoObtendio')">Acción</button>
+            `);
+          }
+          return ''; // Celda vacía para otros campos
         }
       }
     ],
@@ -391,7 +413,10 @@ function renderEditableTable(data, editableFields) {
   }).render(container);
 }
 
+
+let contactName = "customer";
 function autocompleteForm(body) {
+  contactName = body.name +" "+ body.apellido;
   const formMap = {
     nombres: body.nombre || '',
     apellidos: body.apellido || '',
@@ -472,7 +497,7 @@ async function getWrapUpCodes(divisionId) {
 
 //custom_-_d0d53271-fbc5-43c9-9324-43935958a9d7
 async function getUsersByDivision(divisionName) {
-    let apiIntegration = new platformClient.IntegrationsApi();
+  let apiIntegration = new platformClient.IntegrationsApi();
   let actionId = "custom_-_d0d53271-fbc5-43c9-9324-43935958a9d7"; 
   let body = {"divisionName":divisionName}; 
   let opts = { 
@@ -504,8 +529,34 @@ async function getUsersByDivision(divisionName) {
   });
 }
 
-function createCallback(){
+//custom_-_98d17133-7edd-4813-a4d1-0b3200b90564
+function createCallback(userId, userName, queueId, scheduleTime, scriptId, callbackNumbers, campaingId, contactId, contactName, conversationId, participantId){
+  let apiIntegration = new platformClient.IntegrationsApi();
 
+  let actionId = "custom_-_98d17133-7edd-4813-a4d1-0b3200b90564"; 
+  let body = null; 
+  let opts = { 
+    "userId": userId,
+    "userName": userName,
+    "queueId": queueId,
+    "scheduleTime":scheduleTime,
+    "scriptId": scriptId, 
+    "callbackNumbers": callbackNumbers,
+    "campaingId": campaingId,
+    "contactId": contactId,
+    "contactName": contactName,
+    "conversationId": conversationId,
+    "participantId": participantId
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+    .then((data) => {
+      console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
+    })
+    .catch((err) => {
+      console.log("There was a failure calling postIntegrationsActionExecute");
+      console.error(err);
+    });
 }
 
 
