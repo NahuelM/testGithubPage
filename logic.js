@@ -471,7 +471,6 @@ function reprogramarConFlatpickr(conversationId) {
 }
 
 
-
 function abrirCalendario(conversationId) {
   // Esta función luego abrirá un calendar date picker
   console.log(`🗓 Abrir calendario para: ${conversationId}`);

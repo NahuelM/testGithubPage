@@ -157,3 +157,19 @@ button:disabled {
 .hidden {
   display: none !important;
 }
+
+
+.parent {
+display: grid;
+grid-template-columns: repeat(9, 1fr);
+grid-template-rows: repeat(12, 1fr);
+grid-column-gap: 6px;
+grid-row-gap: 6px;
+}
+
+.div1 { grid-area: 1 / 1 / 2 / 4; }
+.div2 { grid-area: 2 / 1 / 9 / 4; }
+.div3 { grid-area: 2 / 4 / 9 / 6; }
+.div4 { grid-area: 9 / 1 / 13 / 10; }
+.div5 { grid-area: 2 / 8 / 9 / 10; }
+.div6 { grid-area: 2 / 6 / 9 / 8; }

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Formulario Estilizado</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/just-validate@4.3.0/dist/just-validate.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/gridjs/dist/gridjs.umd.js"></script>
+<style>
+  body { margin:0; padding:0; font-family: 'Roboto', sans-serif; background:#F2F2F2; }
+  .parent {
+    display:grid;
+    grid-template-columns: repeat(9, 1fr);
+    grid-template-rows: repeat(12, 1fr);
+    grid-gap:6px;
+    height:100vh;
+    padding:10px;
+  }
+  .div1 { grid-area:1/1/2/4; font-size:1.5rem; font-weight:500; color:#0061A0; }
+  .div2 { grid-area:2/1/9/4; background:white; padding:15px; border-radius:8px; overflow-y:auto; }
+  .div3 { grid-area:2/4/9/6; background:white; padding:15px; border-radius:8px; }
+  .div4 { grid-area:9/1/13/10; background:white; padding:15px; border-radius:8px;}
+  .div5 { grid-area:2/8/9/10; background:white; padding:15px; border-radius:8px; }
+  .div6 { grid-area:2/6/9/8; background:white; padding:15px; border-radius:8px; }
+
+  .form-grid { display:grid; grid-template-columns: 1fr 1fr; gap:12px 20px; }
+  input, select, textarea { width:100%; padding:10px; border:1px solid #A7A8AA; border-radius:4px; font-size:0.9rem; color:#333; }
+  input::placeholder, select { color:#75787B; }
+  button { background:#008EDD; color:white; border:none; padding:10px 16px; border-radius:5px; cursor:pointer; font-size:1rem; margin-top:10px; }
+  button:hover { background:#0060A2; }
+  .btn-update { background:#A4CE4E; }
+  .btn-update:hover { background:#819E37; }
+
+  .grid-table { font-size:0.9rem; }
+</style>
+</head>
+<body>
+<div class="parent">
+  <div class="div1">Registro de Cliente</div>
+  <div class="div2">
+    <form id="main-form">
+      <div class="form-grid">
+        <input type="text" id="nombres" name="nombres" placeholder="Nombres" />
+        <input type="text" id="apellidos" name="apellidos" placeholder="Apellidos" />
+        <input type="text" id="ci" name="ci" placeholder="Cédula de Identidad" />
+        <input type="date" id="fechaNacimiento" name="fechaNacimiento" placeholder="Fecha de nacimiento" />
+        <input type="text" id="direccion" name="direccion" placeholder="Dirección" />
+        <select id="departamento" name="departamento">
+          <option value="" disabled selected>Departamento</option><option>Montevideo</option><option>Canelones</option>
+        </select>
+        <input type="text" id="localidad" name="localidad" placeholder="Localidad" />
+        <input type="text" id="codigoPostal" name="codigoPostal" placeholder="Código Postal" />
+        <input type="text" id="telefono1" name="telefono1" placeholder="Teléfono 1" />
+        <input type="text" id="telefono2" name="telefono2" placeholder="Teléfono 2" />
+        <input type="text" id="telefono3" name="telefono3" placeholder="Teléfono 3" />
+        <input type="text" id="telefono4" name="telefono4" placeholder="Teléfono 4" />
+        <input type="email" id="email" name="email" placeholder="Email" />
+        <select id="opcion1" name="opcion1"><option value="" disabled selected>Opción 1</option><option>A</option><option>B</option></select>
+        <select id="opcion2" name="opcion2"><option value="" disabled selected>Opción 2</option><option>C</option><option>D</option></select>
+      </div>
+      <button type="submit">Guardar Datos</button>
+    </form>
+  </div>
+
+  <div class="div3">
+    <div id="gridjs-table" class="grid-table"></div>
+    <button class="btn-update" id="update-table">Actualizar BD</button>
+  </div>
+
+  <div class="div4">
+    <!-- Contenido tabla info adicional -->
+    <div id="tabla">Información adicional aquí...</div>
+  </div>
+
+  <div class="div5">
+    <form id="wrapup-form">
+      <select id="wrapup" name="wrapup"><option value="" disabled selected>Wrapup Code</option><option value="venta">Venta</option><option value="no">No interesado</option></select>
+      <textarea id="notas" name="notas" rows="4" placeholder="Notas..."></textarea>
+      <button type="submit">Guardar Wrapup</button>
+    </form>
+  </div>
+
+  <div class="div6">
+    <form id="callback-form">
+      <input type="datetime-local" id="callback-datetime" name="callback-datetime" />
+      <label><input type="checkbox" id="dueno" name="dueno" /> Dueño</label>
+      <select id="motivo" name="motivo"><option value="" disabled selected>Motivo</option><option value="llamar">Llamar</option><option value="agendar">Agendar</option></select>
+      <button type="submit">Agendar Callback</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  const validator = new JustValidate('#main-form');
+  validator
+    .addField('#nombres', [{ rule:'required', errorMessage:'Obligatorio' }])
+    .addField('#ci', [{ rule:'required', errorMessage:'Obligatorio' }]);
+  // agregar más campos aquí...
+
+	new gridjs.Grid({
+  columns: [
+    { 
+      name: 'Propiedad',
+      sort: false,
+      width: '40%'
+    },
+    { 
+      name: 'Valor',
+      sort: false,
+      width: '60%',
+      formatter: (cell, row, col) => {
+        // Si el valor debe ser editable (campo1, campo2, campo4)
+        const editableFields = ['Campo1', 'Campo2', 'Campo4'];
+        if (editableFields.includes(row.cells[0].data)) {
+          return gridjs.html(
+            `<input type="text" 
+                     value="${cell}" 
+                     data-field="${row.cells[0].data}" 
+                     style="width:90%; padding:4px; border-radius:3px; border:1px solid #A7A8AA;" />`
+          );
+        }
+        return cell;
+      }
+    }
+  ],
+  data: [
+    ['Campo1', 'valor1'],
+    ['Campo2', 'valor2'],
+    ['Campo3', 'valor3'],
+    ['Campo4', 'valor4'],
+    ['Campo5', 'valor5'],
+    ['Campo6', 'valor6'],
+    ['Campo7', 'valor7']
+  ],
+  pagination: false,
+  search: false,
+  sort: false,
+  style: {
+    table: {
+      fontSize: '0.9rem',
+      width: '100%'
+    },
+    td: {
+      padding: '6px 4px'
+    },
+    th: {
+      backgroundColor: '#E6F2F9',
+      color: '#0061A0',
+      textAlign: 'left'
+    }
+  }
+}).render(document.getElementById('gridjs-table'));
+
+
+
+  document.getElementById('update-table').onclick = () => {
+    alert('Aquí llamás tu endpoint para actualizar BD');
+  };
+</script>
+<script src="pkce.js"></script>
+<script src="pageLogic.js"></script>
+</body>
+</html>
