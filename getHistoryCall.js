@@ -8,29 +8,32 @@ const client = platformClient.ApiClient.instance;
 let codeVerifier = localStorage.getItem('code_verifier');
 client.setEnvironment(REGION);
 async function login() {
-	codeVerifier = generateCodeVerifier();
-	const codeChallenge = await generateCodeChallenge(codeVerifier);
+  codeVerifier = generateCodeVerifier();
+  const codeChallenge = await generateCodeChallenge(codeVerifier);
+  localStorage.setItem('code_verifier', codeVerifier);
 
-	localStorage.setItem('code_verifier', codeVerifier);
+  // Armamos el state como query string
+  const contactId = urlParams.get('contactId') || '';
+  const campaignId = urlParams.get('campaignId') || '';
 
-	const url = `https://login.${REGION}/oauth/authorize?` +
-		`client_id=${CLIENT_ID}` +
-		`&response_type=code` +
-		`&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-		`&code_challenge=${codeChallenge}` +
-		`&code_challenge_method=S256` +
-		`&state=${encodeURIComponent(contactId || '')}`;
+  const stateObj = new URLSearchParams();
+  if (contactId) stateObj.append('contactId', contactId);
+  if (campaignId) stateObj.append('campaignId', campaignId);
 
-	window.location.href = url;
-  const state = decodeURIComponent(urlParams.get('state'));
-  const stateParams = new URLSearchParams(state);
+  // Podés agregar más parámetros al state así:
+  // stateObj.append('userType', 'cliente');
 
-  const contactId = stateParams.get('contactId');
-  const campaingId = stateParams.get('campaingId');
+  const state = encodeURIComponent(stateObj.toString());
 
-  localStorage.setItem('contactId', contactId);
-  localStorage.setItem('campaingId', campaingId);
+  const url = `https://login.${REGION}/oauth/authorize?` +
+    `client_id=${CLIENT_ID}` +
+    `&response_type=code` +
+    `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
+    `&code_challenge=${codeChallenge}` +
+    `&code_challenge_method=S256` +
+    `&state=${state}`;
 
+  window.location.href = url;
 }
 
 async function exchangeCodeForToken(code) {
@@ -273,36 +276,39 @@ async function resolveWrapupCodesArray(wrapUpCodes, accessToken) {
 
 
 const urlParams = new URLSearchParams(window.location.search);
-const contactId = urlParams.get('contactId');
-const campaingId = urlParams.get('campaingId');
+const code = urlParams.get('code');
+const rawState = urlParams.get('state');
 
-if (urlParams.has('code')) {
-	const code = urlParams.get('code');
-  const state = encodeURIComponent(`contactId=${contactId}&campaingId=${campaingId}`);
-  const authUrl = `https://login.sae1.pure.cloud/oauth/authorize?response_type=code&state=${state}`;
+// Si venís del login con PKCE (con ?code=...), extraemos los parámetros del state y los guardamos
+if (code && rawState) {
+  const stateParams = new URLSearchParams(decodeURIComponent(rawState));
+  for (const [key, value] of stateParams.entries()) {
+    localStorage.setItem(key, value); // guarda contactId, campaignId, o cualquier otro
+  }
 
-	exchangeCodeForToken(code)
-		.then(() => {
-			history.replaceState(null, '', REDIRECT_URI); // Limpia la URL
-		})
-		.catch(err => alert('Error en login: ' + err.message));
+  exchangeCodeForToken(code)
+    .then(() => {
+      history.replaceState(null, '', REDIRECT_URI); // limpia los parámetros de la URL
+    })
+    .catch(err => alert('Error en login: ' + err.message));
 }
 
+// Si aún no logueamos, redirige a OAuth con el state preparado
 if (!window.__alreadyRan) {
-	window.__alreadyRan = true;
+  window.__alreadyRan = true;
 
-	(async () => {
-		const code = urlParams.get('code');
-		if (!code) {
-			await login(); // hace redirect
-		} else {
+  (async () => {
+    if (!code) {
+      await login(); // redirige
+    } else {
       const contactId = localStorage.getItem('contactId');
       const campaignId = localStorage.getItem('campaignId');
-			await getHistoryCalls(contactId);
+      await getHistoryCalls(contactId);
       await getContactData(contactId, campaignId);
-		}
-	})();
+    }
+  })();
 }
+
 
 //custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1
 async function getContactData(contactId, campaignId){
