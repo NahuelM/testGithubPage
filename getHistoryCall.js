@@ -2,7 +2,7 @@ const CLIENT_ID = 'a55b8a1e-58b5-47f0-b954-fbad359103ef';
 const REGION = 'sae1.pure.cloud';       
 const REDIRECT_URI = window.location.origin + window.location.pathname;
 const contactId = window.location.href.split('?contactId=')[1];
-
+const campaignId = window.location.href.split('?campaignId=')[1];
 const client = platformClient.ApiClient.instance;
 
 let codeVerifier = localStorage.getItem('code_verifier');
@@ -269,6 +269,7 @@ if (urlParams.has('code')) {
 	const code = urlParams.get('code');
   const state = urlParams.get('state'); 
   localStorage.setItem('contactId', state);
+  localStorage.setItem('campaingId(', state)
 	exchangeCodeForToken(code)
 		.then(() => {
 			history.replaceState(null, '', REDIRECT_URI); // Limpia la URL
@@ -285,6 +286,7 @@ if (!window.__alreadyRan) {
 			await login(); // hace redirect
 		} else {
       const contactId = localStorage.getItem('contactId');
+      const campaignId = localStorage.getItem('campaignId');
 			await getHistoryCalls(contactId);
       await getContactData(contactId, campaignId);
 		}
