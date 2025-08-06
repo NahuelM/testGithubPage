@@ -368,7 +368,9 @@ function renderEditableTable(data, editableFields) {
         name: 'Valor', sort: false,
         formatter: (cell, row) => {
           const campo = row.cells[0].data;
-          if (editableFields.includes(campo)) {
+          const isEditable = editableFields.includes(campo) || campo === 'TelefonoObtendio';
+
+          if (isEditable) {
             return gridjs.html(`
               <input type="text" 
                      value="${cell}" 
@@ -376,28 +378,26 @@ function renderEditableTable(data, editableFields) {
                      style="width:90%; padding:4px; border-radius:3px; border:1px solid #A7A8AA;" />
             `);
           }
+
           return cell;
         }
       },
       {
-        name: '', // Header oculto o vacío
+        name: '', // sin header visible
         sort: false,
         formatter: (_, row) => {
           const campo = row.cells[0].data;
           if (campo === 'TelefonoObtendio') {
             return gridjs.html(`
-              <button style="
-                padding: 6px 10px;
-                background-color: #008EDD;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                cursor: pointer;
-                font-size: 0.8rem;
-              " onclick="alert('Botón de acción para TelefonoObtendio')">Acción</button>
+              <button onclick="accionTelefonoObtendio()" 
+                      style="background: none; border: none; cursor: pointer; padding: 4px;">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 16.92V21a2 2 0 0 1-2.18 2A19.72 19.72 0 0 1 3 5.18 2 2 0 0 1 5 3h4.09a1 1 0 0 1 1 .75l1.38 5.52a1 1 0 0 1-.27.95L9.91 12.09a16 16 0 0 0 6 6l1.87-1.87a1 1 0 0 1 .95-.27l5.52 1.38a1 1 0 0 1 .75 1z"/>
+                </svg>
+              </button>
             `);
           }
-          return ''; // Celda vacía para otros campos
+          return ''; // celda vacía para los demás campos
         }
       }
     ],
@@ -411,6 +411,18 @@ function renderEditableTable(data, editableFields) {
       th: { backgroundColor: '#E6F2F9', color: '#0061A0', textAlign: 'left' }
     }
   }).render(container);
+}
+
+function accionTelefonoObtendio() {
+  const input = document.querySelector('input[data-campo="TelefonoObtendio"]');
+  if (input) {
+    const valor = input.value;
+    console.log('Teléfono obtenido:', valor);
+    // Podés copiar al portapapeles, mostrar modal, llamar, etc.
+    navigator.clipboard.writeText(valor)
+      .then(() => alert("Teléfono copiado: " + valor))
+      .catch(err => console.error("Error al copiar:", err));
+  }
 }
 
 
