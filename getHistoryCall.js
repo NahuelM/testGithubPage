@@ -1,8 +1,8 @@
 const CLIENT_ID = 'a55b8a1e-58b5-47f0-b954-fbad359103ef';
 const REGION = 'sae1.pure.cloud';       
 const REDIRECT_URI = window.location.origin + window.location.pathname;
-const contactId = window.location.href.split('?contactId=')[1];
-const campaignId = window.location.href.split('?campaignId=')[1];
+// const contactId = window.location.href.split('?contactId=')[1];
+// const campaignId = window.location.href.split('?campaignId=')[1];
 const client = platformClient.ApiClient.instance;
 
 let codeVerifier = localStorage.getItem('code_verifier');
@@ -22,6 +22,15 @@ async function login() {
 		`&state=${encodeURIComponent(contactId || '')}`;
 
 	window.location.href = url;
+  const state = decodeURIComponent(urlParams.get('state'));
+  const stateParams = new URLSearchParams(state);
+
+  const contactId = stateParams.get('contactId');
+  const campaingId = stateParams.get('campaingId');
+
+  localStorage.setItem('contactId', contactId);
+  localStorage.setItem('campaingId', campaingId);
+
 }
 
 async function exchangeCodeForToken(code) {
@@ -264,12 +273,14 @@ async function resolveWrapupCodesArray(wrapUpCodes, accessToken) {
 
 
 const urlParams = new URLSearchParams(window.location.search);
+const contactId = params.get('contactId');
+const campaingId = params.get('campaingId');
 
 if (urlParams.has('code')) {
 	const code = urlParams.get('code');
-  const state = urlParams.get('state'); 
-  localStorage.setItem('contactId', state);
-  localStorage.setItem('campaingId(', state)
+  const state = encodeURIComponent(`contactId=${contactId}&campaingId=${campaingId}`);
+  const authUrl = `https://login.sae1.pure.cloud/oauth/authorize?response_type=code&state=${state}`;
+
 	exchangeCodeForToken(code)
 		.then(() => {
 			history.replaceState(null, '', REDIRECT_URI); // Limpia la URL
