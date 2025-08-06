@@ -321,9 +321,9 @@ async function getContactData(contactId, campaignId){
 
   apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
   .then((data) => {
-    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
+    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
     const editableFields = ['Direccion', 'Fecha Nacimiento', 'Telefono1', 'Telefono2'];
-    const tableData = parseMarkdownTable(data['body.markdownTable']);
+    const tableData = parseMarkdownTable(data.body.markdownTable);
     renderEditableTable(tableData, editableFields);
     autocompleteForm(data);
   })
@@ -382,15 +382,15 @@ function renderEditableTable(data, editableFields) {
 
 function autocompleteForm(body) {
   const formMap = {
-    nombres: body['body.nombre'] || '',
-    apellidos: body['body.apellido'] || '',
-    direccion: body['body.direccion'] || '',
-    localidad: body['body.localidad'] || '',
-    email: body['body.mail'] || '',
-    fechaNacimiento: body['body.birthDate'] || '',
-    telefono1: body['body.phoneValues']?.[0] || '',
-    telefono2: body['body.phoneValues']?.[1] || '',
-    telefono3: body['body.phoneValues']?.[2] || '',
+    nombres: body.nombre || '',
+    apellidos: body.apellido || '',
+    direccion: body.direccion || '',
+    localidad: body.localidad || '',
+    email: body.mail || '',
+    fechaNacimiento: body.birthDate || '',
+    telefono1: body.phoneValues?.[0] || '',
+    telefono2: body.phoneValues?.[1] || '',
+    telefono3: body.phoneValues?.[2] || '',
   };
 
   Object.entries(formMap).forEach(([id, value]) => {
