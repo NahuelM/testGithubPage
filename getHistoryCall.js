@@ -383,6 +383,7 @@ function renderEditableTable(data, editableFields) {
         }
       },
       {
+        id: 'boton',
         name: '', // sin header visible
         sort: false,
         formatter: (_, row) => {
