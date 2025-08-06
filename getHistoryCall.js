@@ -319,7 +319,9 @@ document.getElementById('Tipificar').onclick = (e) => {
   const wrapupCode = select.value;
   const wrapupName = select.options[select.selectedIndex].text;
 
-  tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName);
+  const note = document.getElementById("notes");
+
+  tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName, note);
 };
 
 
@@ -409,7 +411,7 @@ function autocompleteForm(body) {
 }
 
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
-function tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName) {
+function tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName, note) {
   let apiIntegration = new platformClient.IntegrationsApi();
   let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
   let body = {"conversationId":contactId,
@@ -446,12 +448,21 @@ async function getWrapUpCodes(divisionId) {
     const wrapupSelect = document.getElementById('wrapup');
     wrapupSelect.innerHTML = '<option value="" disabled selected>Seleccione un Wrap-Up</option>'; // limpiar y dejar default
 
-    data.entities.forEach(entity => {
-      const option = document.createElement('option');
-      option.value = entity.id;
-      option.textContent = entity.name;
-      wrapupSelect.appendChild(option);
-    });
+    const ids = data["entities.id"];
+    const names = data["entities.name"];
+    // Limpiar y dejar opción por defecto
+    wrapupSelect.innerHTML = '<option value="" disabled selected>Seleccione un Wrap-Up</option>';
+
+    if (Array.isArray(ids) && Array.isArray(names) && ids.length === names.length) {
+      for (let i = 0; i < ids.length; i++) {
+        const option = document.createElement('option');
+        option.value = ids[i];
+        option.textContent = names[i];
+        wrapupSelect.appendChild(option);
+      }
+    } else {
+      console.warn("Datos inconsistentes en los wrapups.");
+    }
   })
   .catch((err) => {
     console.log("There was a failure calling postIntegrationsActionExecute");
@@ -470,15 +481,22 @@ async function getUsersByDivision(divisionName) {
 
   apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
   .then((data) => {
-    const agentSelect = document.getElementById('wrapup');
-    agentSelect.innerHTML = '<option value="" disabled selected>Seleccione un Agente</option>'; // limpiar y dejar default
+  const agentSelect = document.getElementById('AgenteCall');
+  agentSelect.innerHTML = '<option value="" disabled selected>Seleccione un Agente</option>';
 
-    data.entities.forEach(entity => {
+  const ids = data.usersData?.ids || [];
+  const usernames = data.usersData?.usernames || [];
+
+  if (Array.isArray(ids) && Array.isArray(usernames) && ids.length === usernames.length) {
+    for (let i = 0; i < ids.length; i++) {
       const option = document.createElement('option');
-      option.value = entity.ids;
-      option.textContent = entity.usernames;
+      option.value = ids[i];          // ID como value
+      option.textContent = usernames[i]; // username visible
       agentSelect.appendChild(option);
-    });
+    }
+  } else {
+    console.warn('Datos inválidos en usersData');
+}
   })
   .catch((err) => {
     console.log("There was a failure calling postIntegrationsActionExecute");
