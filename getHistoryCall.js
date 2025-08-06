@@ -348,6 +348,8 @@ function parseMarkdownTable(md) {
 
 
 function renderEditableTable(data, editableFields) {
+  const container = document.getElementById('gridjs-table');
+  container.innerHTML = ''; // ⬅️ limpia antes de renderizar
   new gridjs.Grid({
     columns: [
       { name: 'Campo', sort: false },
@@ -376,7 +378,7 @@ function renderEditableTable(data, editableFields) {
       td: { padding: '6px 4px' },
       th: { backgroundColor: '#E6F2F9', color: '#0061A0', textAlign: 'left' }
     }
-  }).render(document.getElementById('gridjs-table'));
+  }).render(container);
 }
 
 
