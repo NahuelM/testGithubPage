@@ -431,7 +431,7 @@ function tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName)
 //custom_-_6e05c5aa-46b4-468e-a3d6-24e6768ae4c1
 async function getWrapUpCodes(divisionId) {
   let apiIntegration = new platformClient.IntegrationsApi();
-  let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
+  let actionId = "custom_-_6e05c5aa-46b4-468e-a3d6-24e6768ae4c1"; 
   let body = {"divisionId":divisionId}; 
   let opts = { 
     "flatten": false 
@@ -480,6 +480,10 @@ async function getUsersByDivision(divisionName) {
     console.log("There was a failure calling postIntegrationsActionExecute");
     console.error(err);
   });
+}
+
+function createCallback(){
+  
 }
 
 
