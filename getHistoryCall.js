@@ -309,6 +309,15 @@ if (!window.__alreadyRan) {
   })();
 }
 
+document.getElementById('Tipificar').onclick = () => {
+  const contactId = localStorage.getItem('contactId');
+  const campaignId = localStorage.getItem('campaignId');
+  const participantId = localStorage.getItem('participantId')
+  const wrapupCode = "";
+  const wrapupName = "";
+
+  tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName);
+};
 
 //custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1
 async function getContactData(contactId, campaignId){
@@ -333,10 +342,6 @@ async function getContactData(contactId, campaignId){
   });
 }
 
-
-
-  
-
 function parseMarkdownTable(md) {
   const lines = md.trim().split('\n').slice(2); // quitamos cabecera y separadores
   const data = lines.map(line => {
@@ -345,7 +350,6 @@ function parseMarkdownTable(md) {
   });
   return data;
 }
-
 
 function renderEditableTable(data, editableFields) {
   const container = document.getElementById('gridjs-table');
@@ -381,7 +385,6 @@ function renderEditableTable(data, editableFields) {
   }).render(container);
 }
 
-
 function autocompleteForm(body) {
   const formMap = {
     nombres: body.nombre || '',
@@ -402,7 +405,7 @@ function autocompleteForm(body) {
 }
 
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
-function tipificar() {
+function tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName) {
   let apiIntegration = new platformClient.IntegrationsApi();
   let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
   let body = {"conversationId":contactId,
