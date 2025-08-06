@@ -273,8 +273,8 @@ async function resolveWrapupCodesArray(wrapUpCodes, accessToken) {
 
 
 const urlParams = new URLSearchParams(window.location.search);
-const contactId = params.get('contactId');
-const campaingId = params.get('campaingId');
+const contactId = urlParams.get('contactId');
+const campaingId = urlParams.get('campaingId');
 
 if (urlParams.has('code')) {
 	const code = urlParams.get('code');
