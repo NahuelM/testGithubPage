@@ -366,7 +366,7 @@ async function getContactData(contactId, campaignId){
     console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
     const editableFields = ['Direccion', 'Fecha Nacimiento', 'Telefono1', 'Telefono2', 'TelefonoObtenido', 'Auxiliar'];
     const tableData = parseMarkdownTable(data.body.markdownTable);
-    
+
     PhoneNumbers = (data.body.phoneValues || [])
       .filter(p => p && p.trim() !== "")
       .join(", ");
@@ -593,8 +593,10 @@ function createCallback(userId, userName, queueId, scheduleTime, scriptId, callb
   let apiIntegration = new platformClient.IntegrationsApi();
 
   let actionId = "custom_-_98d17133-7edd-4813-a4d1-0b3200b90564"; 
-  let body = null; 
   let opts = { 
+    "flatten": false 
+  };
+  let body = { 
     "userId": userId,
     "userName": userName,
     "queueId": queueId,
