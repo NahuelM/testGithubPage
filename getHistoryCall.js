@@ -366,7 +366,11 @@ async function getContactData(contactId, campaignId){
     console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
     const editableFields = ['Direccion', 'Fecha Nacimiento', 'Telefono1', 'Telefono2', 'TelefonoObtenido', 'Auxiliar'];
     const tableData = parseMarkdownTable(data.body.markdownTable);
-    PhoneNumbers = data.body.phoneNumbers.join(",")
+    
+    PhoneNumbers = (data.body.phoneValues || [])
+      .filter(p => p && p.trim() !== "")
+      .join(", ");
+
     renderEditableTable(tableData, editableFields);
     document.addEventListener('DOMContentLoaded', () => {
       if (data) {
