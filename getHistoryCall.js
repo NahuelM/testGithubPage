@@ -18,6 +18,9 @@ async function login() {
   const participantId = urlParams.get('participantId') || '';
   const conversationId = urlParams.get('conversationId') || '';
   const scriptId = urlParams.get('scriptId') || '';
+  const userId =  urlParams.get('userId') || '';
+  const userName =  urlParams.get('userName') || '';
+  const queueId =  urlParams.get('queueId') || '';
 
 
   const stateObj = new URLSearchParams();
@@ -26,7 +29,9 @@ async function login() {
   if (participantId) stateObj.append('participantId', participantId);
   if (scriptId) stateObj.append('scriptId', scriptId);
   if (conversationId) stateObj.append('conversationId', conversationId);
-  //if (conversationId) stateObj.append('conversationId', conversationId);
+  if (userId) stateObj.append('userId', userId);
+  if (userName) stateObj.append('userName', userName);
+  if (queueId) stateObj.append('queueId', queueId);
   
   
   // Podés agregar más parámetros al state así:
@@ -332,7 +337,21 @@ document.getElementById('Tipificar').onclick = (e) => {
   tipificar(conversationId, participantId, wrapupCode, wrapupName, note.value);
 };
 
-
+document.getElementById('Callback').onclick = (e) => {
+  e.preventDefault(); 
+  const userId = localStorage.getItem('userId');
+  const userName = localStorage.getItem('userName');
+  const queueId = localStorage.getItem('queueId');
+  const scriptId = localStorage.getItem('scriptId');
+  const campaignId = localStorage.getItem('campaignId');
+  const contactId = localStorage.getItem('contactId');
+  const conversationId = localStorage.getItem('conversationId');
+  const participantId = localStorage.getItem('participantId');
+  const datePicker = document.getElementById("callback-datetime")
+  createCallback(userId, userName, queueId, datePicker.value, scriptId, PhoneNumbers, campaignId, contactId, ContactName, conversationId, participantId)
+}
+  
+let PhoneNumbers = ""
 //custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1
 async function getContactData(contactId, campaignId){
   let apiIntegration = new platformClient.IntegrationsApi();
@@ -345,8 +364,9 @@ async function getContactData(contactId, campaignId){
   apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
   .then((data) => {
     console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
-    const editableFields = ['Direccion', 'Fecha Nacimiento', 'Telefono1', 'Telefono2'];
+    const editableFields = ['Direccion', 'Fecha Nacimiento', 'Telefono1', 'Telefono2', 'TelefonoObtenido', 'Auxiliar'];
     const tableData = parseMarkdownTable(data.body.markdownTable);
+    PhoneNumbers = data.body.phoneNumbers.join(",")
     renderEditableTable(tableData, editableFields);
     document.addEventListener('DOMContentLoaded', () => {
       if (data) {
@@ -450,9 +470,9 @@ function accionTelefonoObtendio() {
 }
 
 
-let contactName = "customer";
+let ContactName = "customer";
 function autocompleteForm(body) {
-  contactName = body.name +" "+ body.apellido;
+  ContactName = body.name +" "+ body.apellido;
   const formMap = {
     nombres: body.nombre || '',
     apellidos: body.apellido || '',
@@ -565,7 +585,7 @@ async function getUsersByDivision(divisionName) {
 }
 
 //custom_-_98d17133-7edd-4813-a4d1-0b3200b90564
-function createCallback(userId, userName, queueId, scheduleTime, scriptId, callbackNumbers, campaingId, contactId, contactName, conversationId, participantId){
+function createCallback(userId, userName, queueId, scheduleTime, scriptId, callbackNumbers, campaignId, contactId, contactName, conversationId, participantId){
   let apiIntegration = new platformClient.IntegrationsApi();
 
   let actionId = "custom_-_98d17133-7edd-4813-a4d1-0b3200b90564"; 
@@ -577,7 +597,7 @@ function createCallback(userId, userName, queueId, scheduleTime, scriptId, callb
     "scheduleTime":scheduleTime,
     "scriptId": scriptId, 
     "callbackNumbers": callbackNumbers,
-    "campaingId": campaingId,
+    "campaingId": campaignId, //ERROR ORTOGRAFICO; CAMBIAR!!!!!!!!
     "contactId": contactId,
     "contactName": contactName,
     "conversationId": conversationId,
