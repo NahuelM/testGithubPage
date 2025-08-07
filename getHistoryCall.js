@@ -16,17 +16,17 @@ async function login() {
   const contactId = urlParams.get('contactId') || '';
   const campaignId = urlParams.get('campaignId') || '';
   const participantId = urlParams.get('participantId') || '';
-  const interactionId = urlParams.get('interactionId') || '';
-  const scriptId = urlParams.get('scriptId') || '';
   const conversationId = urlParams.get('conversationId') || '';
+  const scriptId = urlParams.get('scriptId') || '';
+
 
   const stateObj = new URLSearchParams();
   if (contactId) stateObj.append('contactId', contactId);
   if (campaignId) stateObj.append('campaignId', campaignId);
   if (participantId) stateObj.append('participantId', participantId);
   if (scriptId) stateObj.append('scriptId', scriptId);
-  if (interactionId) stateObj.append('interactionId', interactionId);
   if (conversationId) stateObj.append('conversationId', conversationId);
+  //if (conversationId) stateObj.append('conversationId', conversationId);
   
   
   // Podés agregar más parámetros al state así:
@@ -329,7 +329,7 @@ document.getElementById('Tipificar').onclick = (e) => {
 
   const note = document.getElementById("notes");
 
-  tipificar(conversationId, participantId, wrapupCode, wrapupName, note);
+  tipificar(conversationId, participantId, wrapupCode, wrapupName, note.value);
 };
 
 
@@ -432,7 +432,7 @@ function accionTelefonoObtendio() {
     const phone = input.value;
     let apiInstance = new platformClient.ConversationsApi();
 
-    let conversationId = sessionStorage.getItem("conversationId");
+    let conversationId = localStorage.getItem("conversationId");
     let body = {
       "callNumber": phone,
       "phoneColumn": "telefono obtenido"
