@@ -60,6 +60,55 @@ const platformClient = require('platformClient');
 
   .grid-table { font-size:0.9rem; }
 
+  #formContainer {
+  font-family: Arial, sans-serif;
+  margin: 40px;
+  background: #f5f5f5;
+}
+
+#formContainer form {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+#formContainer .field-wrapper {
+  position: relative;
+  margin-bottom: 40px;
+}
+
+#formContainer input,
+#formContainer select {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#formContainer .error-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #f44336;
+  color: white;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 0.8em;
+  margin-top: 5px;
+  z-index: 100;
+  white-space: nowrap;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+#formContainer .error-tooltip > div {
+  margin-bottom: 4px;
+}
+
 	/* html, body {
 		margin: 0;
 		padding: 0;
@@ -72,7 +121,7 @@ const platformClient = require('platformClient');
 <div class="parent">
   <div class="div1">Registro de Cliente</div>
   <div class="div2">
-    <form id="main-form" autocomplete="off">
+    <form id="formContainer" autocomplete="off">
     <div class="form-grid">
 
       <div class="field-wrapper">
