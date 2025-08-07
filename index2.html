@@ -118,48 +118,48 @@ const platformClient = require('platformClient');
     background: #f5f5f5;
   }
 
-#formContainer form {
-  background: white;
-  padding: 20px;
-  border-radius: 10px;
-  max-width: 400px;
-  margin: auto;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
+  #formContainer form {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  }
 
-#formContainer .field-wrapper {
-  position: relative;
-  margin-bottom: 40px;
-}
+  #formContainer .field-wrapper {
+    position: relative;
+    margin-bottom: 40px;
+  }
 
-#formContainer input,
-#formContainer select {
-  display: block;
-  width: 100%;
-  padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-}
+  #formContainer input,
+  #formContainer select {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
 
-#formContainer .error-tooltip {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  background: #f44336;
-  color: white;
-  padding: 6px 10px;
-  border-radius: 5px;
-  font-size: 0.8em;
-  margin-top: 5px;
-  z-index: 100;
-  white-space: nowrap;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
+  #formContainer .error-tooltip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #f44336;
+    color: white;
+    padding: 6px 10px;
+    border-radius: 5px;
+    font-size: 0.8em;
+    margin-top: 5px;
+    z-index: 100;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+  }
 
-#formContainer .error-tooltip > div {
-  margin-bottom: 4px;
-}
+  #formContainer .error-tooltip > div {
+    margin-bottom: 4px;
+  }
 
 	/* html, body {
 		margin: 0;
@@ -286,7 +286,9 @@ const platformClient = require('platformClient');
     errorElement: document.getElementById('nombres-error'),
     rules: [
       { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
-      { validate: val => /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/.test(val), message: 'Solo letras y espacios.' },
+      { validate: val => /^(?! ).*(?<! )$/.test(val), message: 'No se permiten espacios al inicio y al final.' },
+      { validate: val => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]*$/.test(val), message: 'No se permiten números ni símbolos.' },
+      { validate: val => /^.{0,40}$/.test(val), message: 'El texto debe tener entre 1 y 40 caracteres' },
     ]
   },
   apellidos: {
@@ -294,7 +296,9 @@ const platformClient = require('platformClient');
     errorElement: document.getElementById('apellidos-error'),
     rules: [
       { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
-      { validate: val => /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/.test(val), message: 'Solo letras y espacios.' },
+      { validate: val => /^(?! ).*(?<! )$/.test(val), message: 'No se permiten espacios al inicio y al final.' },
+      { validate: val => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]*$/.test(val), message: 'No se permiten números ni símbolos.' },
+      { validate: val => /^.{0,40}$/.test(val), message: 'El texto debe tener entre 1 y 40 caracteres' },
     ]
   },
   ci: {
@@ -302,7 +306,7 @@ const platformClient = require('platformClient');
     errorElement: document.getElementById('ci-error'),
     rules: [
       { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
-      { validate: val => /^\d{1,2}\.?\d{3}\.?\d{3}-?\d$/.test(val), message: 'Formato incorrecto. Ej: 1.234.567-8' },
+      { validate: val => /^[0-9.\\-]{7,8}$/.test(val), message: 'El largo de la CI debe estar entre 7 y 8 caracteres' },
     ]
   },
   fechaNacimiento: {
@@ -310,6 +314,7 @@ const platformClient = require('platformClient');
     errorElement: document.getElementById('fechaNacimiento-error'),
     rules: [
       { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      
     ]
   },
   direccion: {
@@ -317,6 +322,9 @@ const platformClient = require('platformClient');
     errorElement: document.getElementById('direccion-error'),
     rules: [
       { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^(?! ).*(?<! )$/.test(val), message: 'No se permiten espacios al inicio y al final.' },
+      { validate: val => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ0-9 ]*$/.test(val), message: 'No se permiten símbolos.' },
+      { validate: val => /^.{0,70}$/.test(val), message: 'El texto debe tener entre 1 y 70 caracteres.' },
     ]
   },
   departamento: {
@@ -331,6 +339,9 @@ const platformClient = require('platformClient');
     errorElement: document.getElementById('localidad-error'),
     rules: [
       { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^.{0,70}$/.test(val), message: 'El texto debe tener entre 1 y 70 caracteres.' },
+      { validate: val => /^[A-Za-zÁÉÍÓÚÜÑáéíóúüñ ]*$/.test(val), message: 'No se permiten números ni simbolos.' },
+      { validate: val => /^(?! ).*(?<! )$/.test(val), message: 'No se permiten espacios al inicio y al final.' },
     ]
   },
   codigoPostal: {
@@ -338,7 +349,7 @@ const platformClient = require('platformClient');
     errorElement: document.getElementById('codigoPostal-error'),
     rules: [
       { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
-      { validate: val => /^\d{5}$/.test(val), message: 'Debe tener 5 dígitos.' },
+      { validate: val => /"^[0-9.\\-]{1,6}$/.test(val), message: 'El largo del código postal debe estar entre 1 y 6 caracteresg.' },
     ]
   },
   telefono1: {
