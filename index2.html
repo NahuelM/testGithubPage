@@ -104,10 +104,119 @@ const platformClient = require('platformClient');
 </div>
 
 <script>
-  const validator = new JustValidate('#main-form');
   validator
-    .addField('#nombres', [{ rule:'required', errorMessage:'Obligatorio' }])
-    .addField('#ci', [{ rule:'required', errorMessage:'Obligatorio' }]);
+    const validator = new JustValidate('#main-form', {
+  errorFieldCssClass: 'is-invalid',
+  errorLabelCssClass: 'is-label-invalid',
+  errorLabelStyle: {
+    color: '#dc3545',
+  },
+  focusInvalidField: true,
+  lockForm: true,
+});
+
+validator
+  .addField('#nombres', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+    {
+      rule: 'customRegexp',
+      value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+      errorMessage: 'Solo se permiten letras y espacios.',
+    },
+  ])
+  .addField('#apellidos', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+    {
+      rule: 'customRegexp',
+      value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
+      errorMessage: 'Solo se permiten letras y espacios.',
+    },
+  ])
+  .addField('#ci', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+    {
+      rule: 'customRegexp',
+      value: /^\d{1,2}\.?\d{3}\.?\d{3}-?\d$/,
+      errorMessage: 'Formato de cédula incorrecto. Ej: 1234567-8',
+    },
+  ])
+  .addField('#fechaNacimiento', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+    {
+      rule: 'customRegexp',
+      value: /^\d{4}-\d{2}-\d{2}$/,
+      errorMessage: 'Formato de fecha incorrecto. Ej: YYYY-MM-DD',
+    },
+  ])
+  .addField('#direccion', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+  ])
+  .addField('#departamento', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+  ])
+  .addField('#localidad', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+  ])
+  .addField('#codigoPostal', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+    {
+      rule: 'customRegexp',
+      value: /^\d{5}$/,
+      errorMessage: 'El código postal debe tener 5 dígitos.',
+    },
+  ])
+  .addField('#telefono1', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+    {
+      rule: 'customRegexp',
+      value: /^\d{8,10}$/,
+      errorMessage: 'El número debe tener entre 8 y 10 dígitos.',
+    },
+  ])
+  .addField('#telefono2', [
+    {
+      rule: 'customRegexp',
+      value: /^\d{8,10}$/,
+      errorMessage: 'El número debe tener entre 8 y 10 dígitos.',
+    },
+  ])
+  .addField('#email', [
+    {
+      rule: 'required',
+      errorMessage: 'El campo es requerido.',
+    },
+    {
+      rule: 'email',
+      errorMessage: 'Formato de email incorrecto.',
+    },
+  ]);
   // agregar más campos aquí...
 
 

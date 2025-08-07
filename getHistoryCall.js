@@ -347,8 +347,8 @@ document.getElementById('Callback').onclick = (e) => {
   const contactId = localStorage.getItem('contactId');
   const conversationId = localStorage.getItem('conversationId');
   const participantId = localStorage.getItem('participantId');
-  const datePicker = document.getElementById("callback-datetime")
-  createCallback(userId, userName, queueId, datePicker.value, scriptId, PhoneNumbers, campaignId, contactId, ContactName, conversationId, participantId)
+  const datePicker = document.getElementById("callback-datetime");
+  createCallback(userId, userName, queueId, datePicker.value, scriptId, PhoneNumbers, campaignId, contactId, ContactName, conversationId, participantId);
 }
   
 let PhoneNumbers = ""
@@ -372,11 +372,9 @@ async function getContactData(contactId, campaignId){
       .join(", ");
 
     renderEditableTable(tableData, editableFields);
-    document.addEventListener('DOMContentLoaded', () => {
-      if (data) {
-        autocompleteForm(data);
-      }
-    });
+    
+    autocompleteForm(data);
+    
   })
   .catch((err) => {
     console.log("There was a failure calling postIntegrationsActionExecute");
