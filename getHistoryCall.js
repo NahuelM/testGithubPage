@@ -351,6 +351,15 @@ document.getElementById('Callback').onclick = (e) => {
   createCallback(userId, userName, queueId, datePicker.value, scriptId, PhoneNumbers, campaignId, contactId, ContactName, conversationId, participantId);
 }
   
+document.getElementById("ventaButton").onclick = () =>{
+  e.preventDefault();
+  const conversationId = localStorage.getItem('conversationId');
+  const participantId = localStorage.getItem('participantId'); //deberia ser el participantID del customer
+  addInfoVenta(conversationId, participantId, ventaData);
+  addTagVenta(conversationId, "Venta");
+
+}
+
 let PhoneNumbers = ""
 //custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1
 async function getContactData(contactId, campaignId){
@@ -619,3 +628,47 @@ function createCallback(userId, userName, queueId, scheduleTime, scriptId, callb
 }
 
 
+//custom_-_626033b8-85b8-4a23-8022-16b30ebc0b0c
+function addInfoVenta(conversationId, participantId, ventaData){
+  let apiIntegration = new platformClient.IntegrationsApi();
+   let actionId = "custom_-_626033b8-85b8-4a23-8022-16b30ebc0b0c"; 
+  let opts = { 
+    "flatten": false 
+  };
+  let body = { 
+    "conversationId": conversationId,
+    "participantId": participantId,
+    "ventaData": ventaData
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+    .then((data) => {
+      console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
+    })
+    .catch((err) => {
+      console.log("There was a failure calling postIntegrationsActionExecute");
+      console.error(err);
+    });
+}
+
+//custom_-_1a2d0adc-73e8-4313-a2ac-b2db841200b0
+function addTagVenta(conversationId, tagName){
+  let apiIntegration = new platformClient.IntegrationsApi();
+  let actionId = "custom_-_1a2d0adc-73e8-4313-a2ac-b2db841200b0"; 
+  let opts = { 
+    "flatten": false 
+  };
+  let body = { 
+    "conversationId": conversationId,
+    "tagName": tagName
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+    .then((data) => {
+      console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
+    })
+    .catch((err) => {
+      console.log("There was a failure calling postIntegrationsActionExecute");
+      console.error(err);
+    });
+}
