@@ -72,28 +72,82 @@ const platformClient = require('platformClient');
 <div class="parent">
   <div class="div1">Registro de Cliente</div>
   <div class="div2">
-    <form id="main-form">
-      <div class="form-grid">
+    <form id="main-form" autocomplete="off">
+    <div class="form-grid">
+
+      <div class="field-wrapper">
+        <label for="nombres">Nombres</label>
         <input type="text" id="nombres" name="nombres" placeholder="Nombres" />
-        <input type="text" id="apellidos" name="apellidos" placeholder="Apellidos" />
-        <input type="text" id="ci" name="ci" placeholder="Cédula de Identidad" />
-        <input type="date" id="fechaNacimiento" name="fechaNacimiento" placeholder="Fecha de nacimiento" />
-        <input type="text" id="direccion" name="direccion" placeholder="Dirección" />
-        <select id="departamento" name="departamento">
-          <option value="" disabled selected>Departamento</option><option>Montevideo</option><option>Canelones</option>
-        </select>
-        <input type="text" id="localidad" name="localidad" placeholder="Localidad" />
-        <input type="text" id="codigoPostal" name="codigoPostal" placeholder="Código Postal" />
-        <input type="text" id="telefono1" name="telefono1" placeholder="Teléfono 1" />
-        <input type="text" id="telefono2" name="telefono2" placeholder="Teléfono 2" />
-        <input type="text" id="telefono3" name="telefono3" placeholder="Teléfono 3" />
-        <input type="text" id="telefono4" name="telefono4" placeholder="Teléfono 4" />
-        <input type="email" id="email" name="email" placeholder="Email" />
-        <select id="opcion1" name="opcion1"><option value="" disabled selected>Opción 1</option><option>A</option><option>B</option></select>
-        <select id="opcion2" name="opcion2"><option value="" disabled selected>Opción 2</option><option>C</option><option>D</option></select>
+        <div class="error-tooltip" id="nombres-error"></div>
       </div>
-      <button id="ventaButton"type="submit">Guardar Datos</button>
-    </form>
+
+      <div class="field-wrapper">
+        <label for="apellidos">Apellidos</label>
+        <input type="text" id="apellidos" name="apellidos" placeholder="Apellidos" />
+        <div class="error-tooltip" id="apellidos-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="ci">Cédula de Identidad</label>
+        <input type="text" id="ci" name="ci" placeholder="C.I." />
+        <div class="error-tooltip" id="ci-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="fechaNacimiento">Fecha de nacimiento</label>
+        <input type="date" id="fechaNacimiento" name="fechaNacimiento" placeholder="Fecha de nacimiento" />
+        <div class="error-tooltip" id="fechaNacimiento-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="direccion">Dirección</label>
+        <input type="text" id="direccion" name="direccion" placeholder="Dirección" />
+        <div class="error-tooltip" id="direccion-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="departamento">Departamento</label>
+        <select id="departamento" name="departamento">
+          <option value="" disabled selected>Departamento</option>
+          <option>Montevideo</option>
+          <option>Canelones</option>
+        </select>
+        <div class="error-tooltip" id="departamento-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="localidad">Localidad</label>
+        <input type="text" id="localidad" name="localidad" placeholder="Localidad" />
+        <div class="error-tooltip" id="localidad-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="codigoPostal">Código Postal</label>
+        <input type="text" id="codigoPostal" name="codigoPostal" placeholder="Código Postal" />
+        <div class="error-tooltip" id="codigoPostal-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="telefono1">Teléfono 1</label>
+        <input type="text" id="telefono1" name="telefono1" placeholder="Teléfono 1" />
+        <div class="error-tooltip" id="telefono1-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="telefono2">Teléfono 2</label>
+        <input type="text" id="telefono2" name="telefono2" placeholder="Teléfono 2" />
+        <div class="error-tooltip" id="telefono2-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" placeholder="Email" />
+        <div class="error-tooltip" id="email-error"></div>
+      </div>
+    </div>
+    <button id="ventaButton" disabled>Guardar Datos</button>
+  </form>
+
   </div>
 
   <div class="div3">
@@ -125,119 +179,123 @@ const platformClient = require('platformClient');
 </div>
 
 <script>
-  const validator = new JustValidate('#main-form', {
-
-  errorFieldCssClass: 'is-invalid',
-  errorLabelCssClass: 'is-label-invalid',
-  errorLabelStyle: {
-    color: '#dc3545',
+  const fields = {
+  nombres: {
+    element: document.getElementById('nombres'),
+    errorElement: document.getElementById('nombres-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/.test(val), message: 'Solo letras y espacios.' },
+    ]
   },
-  focusInvalidField: true,
-  lockForm: true,
-});
+  apellidos: {
+    element: document.getElementById('apellidos'),
+    errorElement: document.getElementById('apellidos-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s]+$/.test(val), message: 'Solo letras y espacios.' },
+    ]
+  },
+  ci: {
+    element: document.getElementById('ci'),
+    errorElement: document.getElementById('ci-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^\d{1,2}\.?\d{3}\.?\d{3}-?\d$/.test(val), message: 'Formato incorrecto. Ej: 1.234.567-8' },
+    ]
+  },
+  fechaNacimiento: {
+    element: document.getElementById('fechaNacimiento'),
+    errorElement: document.getElementById('fechaNacimiento-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+    ]
+  },
+  direccion: {
+    element: document.getElementById('direccion'),
+    errorElement: document.getElementById('direccion-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+    ]
+  },
+  departamento: {
+    element: document.getElementById('departamento'),
+    errorElement: document.getElementById('departamento-error'),
+    rules: [
+      { validate: val => val !== '', message: 'Seleccione un departamento.' },
+    ]
+  },
+  localidad: {
+    element: document.getElementById('localidad'),
+    errorElement: document.getElementById('localidad-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+    ]
+  },
+  codigoPostal: {
+    element: document.getElementById('codigoPostal'),
+    errorElement: document.getElementById('codigoPostal-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^\d{5}$/.test(val), message: 'Debe tener 5 dígitos.' },
+    ]
+  },
+  telefono1: {
+    element: document.getElementById('telefono1'),
+    errorElement: document.getElementById('telefono1-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^\d{8,10}$/.test(val), message: 'Entre 8 y 10 dígitos.' },
+    ]
+  },
+  telefono2: {
+    element: document.getElementById('telefono2'),
+    errorElement: document.getElementById('telefono2-error'),
+    rules: [
+      { validate: val => val === '' || /^\d{8,10}$/.test(val), message: 'Debe tener entre 8 y 10 dígitos.' },
+    ]
+  },
+  email: {
+    element: document.getElementById('email'),
+    errorElement: document.getElementById('email-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^[^@]+@[^@]+\.[a-z]{2,}$/.test(val), message: 'Formato de email inválido.' },
+    ]
+  },
+};
 
-validator
-  .addField('#nombres', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-    {
-      rule: 'customRegexp',
-      value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
-      errorMessage: 'Solo se permiten letras y espacios.',
-    },
-  ])
-  .addField('#apellidos', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-    {
-      rule: 'customRegexp',
-      value: /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/,
-      errorMessage: 'Solo se permiten letras y espacios.',
-    },
-  ])
-  .addField('#ci', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-    {
-      rule: 'customRegexp',
-      value: /^\d{1,2}\.?\d{3}\.?\d{3}-?\d$/,
-      errorMessage: 'Formato de cédula incorrecto. Ej: 1234567-8',
-    },
-  ])
-  .addField('#fechaNacimiento', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-    {
-      rule: 'customRegexp',
-      value: /^\d{4}-\d{2}-\d{2}$/,
-      errorMessage: 'Formato de fecha incorrecto. Ej: YYYY-MM-DD',
-    },
-  ])
-  .addField('#direccion', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-  ])
-  .addField('#departamento', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-  ])
-  .addField('#localidad', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-  ])
-  .addField('#codigoPostal', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-    {
-      rule: 'customRegexp',
-      value: /^\d{5}$/,
-      errorMessage: 'El código postal debe tener 5 dígitos.',
-    },
-  ])
-  .addField('#telefono1', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-    {
-      rule: 'customRegexp',
-      value: /^\d{8,10}$/,
-      errorMessage: 'El número debe tener entre 8 y 10 dígitos.',
-    },
-  ])
-  .addField('#telefono2', [
-    {
-      rule: 'customRegexp',
-      value: /^\d{8,10}$/,
-      errorMessage: 'El número debe tener entre 8 y 10 dígitos.',
-    },
-  ])
-  .addField('#email', [
-    {
-      rule: 'required',
-      errorMessage: 'El campo es requerido.',
-    },
-    {
-      rule: 'email',
-      errorMessage: 'Formato de email incorrecto.',
-    },
-  ]);
+  const submitBtn = document.getElementById('ventaButton');
+
+  function validateField(field) {
+    const value = field.element.value;
+    const messages = [];
+    field.rules.forEach(rule => {
+      if (!rule.validate(value)) {
+        messages.push(rule.message);
+      }
+    });
+    field.errorElement.innerHTML = messages.map(msg => `<div>${msg}</div>`).join('');
+    field.errorElement.style.display = messages.length ? 'block' : 'none';
+    return messages.length === 0;
+  }
+
+  function validateAll() {
+    let allValid = true;
+    for (const key in fields) {
+      const valid = validateField(fields[key]);
+      if (!valid) allValid = false;
+    }
+    submitBtn.disabled = !allValid;
+  }
+
+  for (const key in fields) {
+    const field = fields[key];
+    field.element.addEventListener('input', () => {
+      validateField(field);
+      validateAll();
+    });
+  }
 
 
   document.getElementById('main-form').addEventListener('submit', function (e) {
