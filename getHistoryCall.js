@@ -15,11 +15,20 @@ async function login() {
   // Armamos el state como query string
   const contactId = urlParams.get('contactId') || '';
   const campaignId = urlParams.get('campaignId') || '';
+  const participantId = urlParams.get('participantId') || '';
+  const interactionId = urlParams.get('interactionId') || '';
+  const scriptId = urlParams.get('scriptId') || '';
+  const conversationId = urlParams.get('conversationId') || '';
 
   const stateObj = new URLSearchParams();
   if (contactId) stateObj.append('contactId', contactId);
   if (campaignId) stateObj.append('campaignId', campaignId);
-
+  if (participantId) stateObj.append('participantId', participantId);
+  if (scriptId) stateObj.append('scriptId', scriptId);
+  if (interactionId) stateObj.append('interactionId', interactionId);
+  if (conversationId) stateObj.append('conversationId', conversationId);
+  
+  
   // Podés agregar más parámetros al state así:
   // stateObj.append('userType', 'cliente');
 
@@ -311,8 +320,7 @@ if (!window.__alreadyRan) {
 
 document.getElementById('Tipificar').onclick = (e) => {
   e.preventDefault(); 
-  const contactId = localStorage.getItem('contactId');
-  const campaignId = localStorage.getItem('campaignId');
+  const conversationId = localStorage.getItem('conversationId');
   const participantId = localStorage.getItem('participantId');
 
   const select = document.getElementById('wrapup');
@@ -321,7 +329,7 @@ document.getElementById('Tipificar').onclick = (e) => {
 
   const note = document.getElementById("notes");
 
-  tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName, note);
+  tipificar(conversationId, participantId, wrapupCode, wrapupName, note);
 };
 
 
@@ -340,7 +348,11 @@ async function getContactData(contactId, campaignId){
     const editableFields = ['Direccion', 'Fecha Nacimiento', 'Telefono1', 'Telefono2'];
     const tableData = parseMarkdownTable(data.body.markdownTable);
     renderEditableTable(tableData, editableFields);
-    autocompleteForm(data);
+    document.addEventListener('DOMContentLoaded', () => {
+      if (data) {
+        autocompleteForm(data);
+      }
+    });
   })
   .catch((err) => {
     console.log("There was a failure calling postIntegrationsActionExecute");
@@ -446,7 +458,7 @@ function autocompleteForm(body) {
     apellidos: body.apellido || '',
     direccion: body.direccion || '',
     localidad: body.localidad || '',
-    email: body.mail || '',
+    email: body.email || '',
     fechaNacimiento: body.birthDate || '',
     telefono1: body.phoneValues?.[0] || '',
     telefono2: body.phoneValues?.[1] || '',
@@ -460,12 +472,11 @@ function autocompleteForm(body) {
 }
 
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
-function tipificar(contactId, campaignId, participantId, wrapupCode, wrapupName, note) {
+function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) {
   let apiIntegration = new platformClient.IntegrationsApi();
   let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
-  let body = {"conversationId":contactId,
-              "participantId":campaignId, 
-              "participantId":participantId,
+  let body = {"conversationId":conversationId,
+              "participantId":participantId, 
               "wrapupCode":wrapupCode,
               "wrapupName":wrapupName,
               "note": note}; 
