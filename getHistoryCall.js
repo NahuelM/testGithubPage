@@ -342,6 +342,10 @@ document.getElementById('Tipificar').onclick = (e) => {
 
 document.getElementById('Callback').onclick = (e) => {
   e.preventDefault(); 
+  createCallbackGateway();
+}
+  
+function createCallbackGateway(){
   const userId = localStorage.getItem('userId');
   const userName = localStorage.getItem('userName');
   const queueId = localStorage.getItem('queueId');
@@ -353,7 +357,7 @@ document.getElementById('Callback').onclick = (e) => {
   const datePicker = document.getElementById("callback-datetime");
   createCallback(userId, userName, queueId, datePicker.value, scriptId, PhoneNumbers, campaignId, contactId, ContactName, conversationId, participantId);
 }
-  
+
 document.getElementById("ventaButton").onclick = () =>{
   e.preventDefault();
   const conversationId = localStorage.getItem('conversationId');
@@ -507,25 +511,30 @@ function autocompleteForm(body) {
 
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
 function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) {
-  let apiIntegration = new platformClient.IntegrationsApi();
-  let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
-  let body = {"conversationId":conversationId,
-              "participantId":participantId, 
-              "wrapupCode":wrapupCode,
-              "wrapupName":wrapupName,
-              "note": note}; 
-  let opts = { 
-    "flatten": false 
-  };
+  if(wrapupName !== "Apertura de deposito" && fechaCallbackVacio){
+    let apiIntegration = new platformClient.IntegrationsApi();
+    let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
+    let body = {"conversationId":conversationId,
+                "participantId":participantId, 
+                "wrapupCode":wrapupCode,
+                "wrapupName":wrapupName,
+                "note": note}; 
+    let opts = { 
+      "flatten": false 
+    };
 
-  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
-  .then((data) => {
-    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
-  })
-  .catch((err) => {
-    console.log("There was a failure calling postIntegrationsActionExecute");
-    console.error(err);
-  });
+    apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+    .then((data) => {
+      console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
+    })
+    .catch((err) => {
+      console.log("There was a failure calling postIntegrationsActionExecute");
+      console.error(err);
+    });
+  }
+  else{
+    //Mostrar mensje de que deben llenar callback
+  }
 }
 
 //custom_-_b2112b56-f4f2-43b9-9d20-248029edcb7a
@@ -745,10 +754,9 @@ function suscribirseATopic(userId) {
 }
 
 
-function habilitarBoton(bool){
+function habilitarBoton(estado) {
   const button = document.getElementById("Tipificar");
-  if(bool) 
-    button.enabled
-  else
-    button.disabled
+  if (button) {
+    button.disabled = !estado;
+  }
 }
