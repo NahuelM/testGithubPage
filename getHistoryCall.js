@@ -448,12 +448,12 @@ function renderEditableTable(data, editableFields) {
     data: data,
     pagination: false,
     search: false,
-    sort: false,
-    style: {
-      table: { fontSize: '0.9rem', width: '100%' },
-      td: { padding: '6px 4px' },
-      th: { backgroundColor: '#E6F2F9', color: '#0061A0', textAlign: 'left' }
-    }
+    sort: false
+    // style: {
+    //   table: { fontSize: '0.9rem', width: '100%' },
+    //   td: { padding: '6px 4px' },
+    //   th: { backgroundColor: '#E6F2F9', color: '#0061A0', textAlign: 'left' }
+    // }
   }).render(container);
 }
 

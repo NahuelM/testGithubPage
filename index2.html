@@ -349,7 +349,7 @@ const platformClient = require('platformClient');
     errorElement: document.getElementById('codigoPostal-error'),
     rules: [
       { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
-      { validate: val => /"^[0-9.\\-]{1,6}$/.test(val), message: 'El largo del código postal debe estar entre 1 y 6 caracteresg.' },
+      { validate: val => /"^[0-9.\\-]{1,6}$/.test(val), message: 'El largo del código postal debe estar entre 1 y 6 caracteres.' },
     ]
   },
   telefono1: {
