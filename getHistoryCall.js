@@ -315,10 +315,12 @@ if (!window.__alreadyRan) {
     } else {
       const contactId = localStorage.getItem('contactId');
       const campaignId = localStorage.getItem('campaignId');
+      const userId = localStorage.getItem("userId")
       await getHistoryCalls(contactId);
       await getContactData(contactId, campaignId);
       await getWrapUpCodes("*");
       await getUsersByDivision("Home");
+      suscribirseATopic(userId);
     }
   })();
 }
@@ -333,8 +335,9 @@ document.getElementById('Tipificar').onclick = (e) => {
   const wrapupName = select.options[select.selectedIndex].text;
 
   const note = document.getElementById("notes");
-
-  tipificar(conversationId, participantId, wrapupCode, wrapupName, note.value);
+  if(globalCommunicationId === null)
+    tipificar(conversationId, participantId, wrapupCode, wrapupName, note.value);
+  else tipificarInCall(conversationId, participantId, globalCommunicationId, wrapupCode, wrapupName, note.value);
 };
 
 document.getElementById('Callback').onclick = (e) => {
@@ -448,12 +451,12 @@ function renderEditableTable(data, editableFields) {
     data: data,
     pagination: false,
     search: false,
-    sort: false
-    // style: {
-    //   table: { fontSize: '0.9rem', width: '100%' },
-    //   td: { padding: '6px 4px' },
-    //   th: { backgroundColor: '#E6F2F9', color: '#0061A0', textAlign: 'left' }
-    // }
+    sort: false,
+    style: {
+      table: { fontSize: '0.9rem', width: '100%' },
+      td: { padding: '6px 4px' },
+      th: { backgroundColor: '#E6F2F9', color: '#0061A0', textAlign: 'left' }
+    }
   }).render(container);
 }
 
@@ -524,6 +527,31 @@ function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) 
     console.error(err);
   });
 }
+
+//custom_-_b2112b56-f4f2-43b9-9d20-248029edcb7a
+function tipificarInCall(conversationId, participantId, communicationId, wrapupCode, wrapupName, note){
+  let apiIntegration = new platformClient.IntegrationsApi();
+  let actionId = "custom_-_b2112b56-f4f2-43b9-9d20-248029edcb7a"; 
+  let body = {"conversationId":conversationId,
+              "participantId":participantId, 
+              "communicationId":communicationId,
+              "wrapupCode":wrapupCode,
+              "wrapupName":wrapupName,
+              "note": note}; 
+  let opts = { 
+    "flatten": false 
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+  .then((data) => {
+    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
+  })
+  .catch((err) => {
+    console.log("There was a failure calling postIntegrationsActionExecute");
+    console.error(err);
+  });
+}
+
 
 //custom_-_6e05c5aa-46b4-468e-a3d6-24e6768ae4c1
 async function getWrapUpCodes(divisionId) {
@@ -624,9 +652,8 @@ function createCallback(userId, userName, queueId, scheduleTime, scriptId, callb
     .catch((err) => {
       console.log("There was a failure calling postIntegrationsActionExecute");
       console.error(err);
-    });
+  });
 }
-
 
 //custom_-_626033b8-85b8-4a23-8022-16b30ebc0b0c
 function addInfoVenta(conversationId, participantId, ventaData){
@@ -648,7 +675,7 @@ function addInfoVenta(conversationId, participantId, ventaData){
     .catch((err) => {
       console.log("There was a failure calling postIntegrationsActionExecute");
       console.error(err);
-    });
+  });
 }
 
 //custom_-_1a2d0adc-73e8-4313-a2ac-b2db841200b0
@@ -670,5 +697,58 @@ function addTagVenta(conversationId, tagName){
     .catch((err) => {
       console.log("There was a failure calling postIntegrationsActionExecute");
       console.error(err);
-    });
+  });
+}
+
+
+
+// Variable global para guardar el communicationId
+let globalCommunicationId = null;
+
+// Función para suscribirse al topic
+function suscribirseATopic(userId) {
+  const notificationsApi = platformClient.notificationsApi;
+  const conversationsApi = platformClient.conversationsApi;
+
+  // Topic para el usuario
+  const topic = `v2.users.${userId}.conversations`;
+
+  // Crear canal WebSocket
+  notificationsApi.postNotificationsChannels().then(channel => {
+    const websocket = new WebSocket(channel.connectUri);
+
+    websocket.onmessage = function(event) {
+      const data = JSON.parse(event.data);
+
+      if (!data.eventBody || !data.eventBody.participants) return;
+
+      // Buscar el último participante con communication y peerId
+      const participantes = data.eventBody.participants;
+      const ultimo = participantes[participantes.length - 1];
+
+      if (ultimo && ultimo.peerId) {
+        communicationId = ultimo.peerId;
+      }
+
+      // Verificar si el estado de ese participante es 'terminated'
+      if (ultimo && ultimo.state === 'terminated') {
+        habilitarBoton(true);
+      }else
+        habilitarBoton(false);
+    };
+
+    // Suscribirse al topic
+    notificationsApi.postNotificationsChannelSubscriptions(channel.id, [
+      { id: topic }
+    ]);
+  });
+}
+
+
+function habilitarBoton(bool){
+  const button = document.getElementById("Tipificar");
+  if(bool) 
+    button.enabled
+  else
+    button.disabled
 }
