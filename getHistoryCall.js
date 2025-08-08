@@ -716,8 +716,8 @@ let globalCommunicationId = null;
 
 // Función para suscribirse al topic
 function suscribirseATopic(userId) {
-  const notificationsApi = platformClient.notificationsApi;
-  const conversationsApi = platformClient.conversationsApi;
+
+  const notificationsApi = new platformClient.NotificationsApi();
 
   // Topic para el usuario
   const topic = `v2.users.${userId}.conversations`;
