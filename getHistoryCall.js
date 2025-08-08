@@ -714,43 +714,87 @@ function addTagVenta(conversationId, tagName){
 // Variable global para guardar el communicationId
 let globalCommunicationId = null;
 
+// Variable global para guardar el communicationId
+let communicationId = null;
+
 // Función para suscribirse al topic
 function suscribirseATopic(userId) {
+  console.log("[suscribirseATopic] Iniciando suscripción para userId:", userId);
 
   const notificationsApi = new platformClient.NotificationsApi();
 
   // Topic para el usuario
   const topic = `v2.users.${userId}.conversations`;
+  console.log("[suscribirseATopic] Topic a suscribirse:", topic);
 
   // Crear canal WebSocket
-  notificationsApi.postNotificationsChannels().then(channel => {
-    const websocket = new WebSocket(channel.connectUri);
+  notificationsApi.postNotificationsChannels()
+    .then(channel => {
+      console.log("[suscribirseATopic] Canal creado:", channel);
 
-    websocket.onmessage = function(event) {
-      const data = JSON.parse(event.data);
+      const websocket = new WebSocket(channel.connectUri);
+      console.log("[suscribirseATopic] Conectando WebSocket a:", channel.connectUri);
 
-      if (!data.eventBody || !data.eventBody.participants) return;
+      websocket.onopen = () => {
+        console.log("[WebSocket] Conexión abierta ✅");
+      };
 
-      // Buscar el último participante con communication y peerId
-      const participantes = data.eventBody.participants;
-      const ultimo = participantes[participantes.length - 1];
+      websocket.onerror = err => {
+        console.error("[WebSocket] Error ❌", err);
+      };
 
-      if (ultimo && ultimo.peerId) {
-        communicationId = ultimo.peerId;
-      }
+      websocket.onclose = () => {
+        console.warn("[WebSocket] Conexión cerrada ⚠️");
+      };
 
-      // Verificar si el estado de ese participante es 'terminated'
-      if (ultimo && ultimo.state === 'terminated') {
-        habilitarBoton(true);
-      }else
-        habilitarBoton(false);
-    };
+      websocket.onmessage = function(event) {
+        console.log("[WebSocket] Mensaje recibido:", event.data);
 
-    // Suscribirse al topic
-    notificationsApi.postNotificationsChannelSubscriptions(channel.id, [
-      { id: topic }
-    ]);
-  });
+        const data = JSON.parse(event.data);
+
+        if (!data.eventBody || !data.eventBody.participants) {
+          console.warn("[WebSocket] Mensaje sin eventBody o participants");
+          return;
+        }
+
+        // Buscar el último participante
+        const participantes = data.eventBody.participants;
+        const ultimo = participantes[participantes.length - 1];
+
+        console.log("[WebSocket] Participantes detectados:", participantes);
+        console.log("[WebSocket] Último participante:", ultimo);
+
+        // Guardar communicationId si existe
+        if (ultimo && (ultimo.peerId || ultimo.peer)) {
+          communicationId = ultimo.peerId || ultimo.peer;
+          console.log("[WebSocket] CommunicationId asignado:", communicationId);
+        } else {
+          console.warn("[WebSocket] No se encontró peerId/peer en el último participante");
+        }
+
+        // Verificar si el estado es 'terminated'
+        if (ultimo && ultimo.state === 'terminated') {
+          console.log("[WebSocket] Estado 'terminated' detectado → habilitar botón");
+          habilitarBoton(true);
+        } else {
+          console.log("[WebSocket] Estado distinto de 'terminated' → deshabilitar botón");
+          habilitarBoton(false);
+        }
+      };
+
+      // Suscribirse al topic
+      notificationsApi.postNotificationsChannelSubscriptions(channel.id, [{ id: topic }])
+        .then(() => {
+          console.log("[suscribirseATopic] Suscripción al topic exitosa ✅");
+        })
+        .catch(err => {
+          console.error("[suscribirseATopic] Error al suscribirse al topic ❌", err);
+        });
+
+    })
+    .catch(err => {
+      console.error("[suscribirseATopic] Error al crear canal ❌", err);
+    });
 }
 
 
