@@ -346,8 +346,8 @@ document.getElementById('Callback').onclick = (e) => {
 }
   
 function createCallbackGateway(){
-  const userId = localStorage.getItem('userId');
-  const userName = localStorage.getItem('userName');
+  let userId = localStorage.getItem('userId');
+  let userName = localStorage.getItem('userName');
   const queueId = localStorage.getItem('queueId');
   const scriptId = localStorage.getItem('scriptId');
   const campaignId = localStorage.getItem('campaignId');
@@ -355,8 +355,25 @@ function createCallbackGateway(){
   const conversationId = localStorage.getItem('conversationId');
   const participantId = localStorage.getItem('participantId');
   const datePicker = document.getElementById("callback-datetime");
+
+  const checkboxOwner = document.getElementById("checkboxOwner");
+
+  if (checkboxOwner.checked) {
+    const dropDown = document.getElementById("AgenteCall");
+    userId = dropDown.value;
+    userName = dropDown.options[dropDown.selectedIndex].text;
+  }
   createCallback(userId, userName, queueId, datePicker.value, scriptId, PhoneNumbers, campaignId, contactId, ContactName, conversationId, participantId);
 }
+
+document.getElementById("AgenteCall").style.display = "none";
+document.getElementById("checkboxOwner").onclick = () => {
+  const dropDown = document.getElementById("AgenteCall");
+  const checkbox = document.getElementById("checkboxOwner");
+
+  // Mostrar si está marcado, ocultar si no
+  dropDown.style.display = checkbox.checked ? "block" : "none";
+};
 
 document.getElementById("ventaButton").onclick = () =>{
   e.preventDefault();
