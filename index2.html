@@ -241,6 +241,18 @@ const platformClient = require('platformClient');
       </div>
 
       <div class="field-wrapper">
+        <label for="telefono3">Teléfono 3</label>
+        <input type="text" id="telefono3" name="telefono3" placeholder="Teléfono 3" />
+        <div class="error-tooltip" id="telefono3-error"></div>
+      </div>
+
+      <div class="field-wrapper">
+        <label for="telefono4">Teléfono 4</label>
+        <input type="text" id="telefono4" name="telefono4" placeholder="Teléfono 4" />
+        <div class="error-tooltip" id="telefono4-error"></div>
+      </div>
+
+      <div class="field-wrapper">
         <label for="email">Email</label>
         <input type="email" id="email" name="email" placeholder="Email" />
         <div class="error-tooltip" id="email-error"></div>
@@ -363,6 +375,21 @@ const platformClient = require('platformClient');
   telefono2: {
     element: document.getElementById('telefono2'),
     errorElement: document.getElementById('telefono2-error'),
+    rules: [
+      { validate: val => val === '' || /^\d{8,10}$/.test(val), message: 'Debe tener entre 8 y 10 dígitos.' },
+    ]
+  },
+  telefono3: {
+    element: document.getElementById('telefono3'),
+    errorElement: document.getElementById('telefono3-error'),
+    rules: [
+      { validate: val => val.trim() !== '', message: 'Este campo es requerido.' },
+      { validate: val => /^\d{8,10}$/.test(val), message: 'Entre 8 y 10 dígitos.' },
+    ]
+  },
+  telefono4: {
+    element: document.getElementById('telefono4'),
+    errorElement: document.getElementById('telefono4-error'),
     rules: [
       { validate: val => val === '' || /^\d{8,10}$/.test(val), message: 'Debe tener entre 8 y 10 dígitos.' },
     ]

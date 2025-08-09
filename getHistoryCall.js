@@ -371,7 +371,6 @@ document.getElementById("checkboxOwner").onclick = () => {
   const dropDown = document.getElementById("AgenteCall");
   const checkbox = document.getElementById("checkboxOwner");
 
-  // Mostrar si está marcado, ocultar si no
   dropDown.style.display = checkbox.checked ? "block" : "none";
 };
 
@@ -731,24 +730,45 @@ function addTagVenta(conversationId, tagName){
 // Variable global para guardar el communicationId
 let globalCommunicationId = null;
 
-// Variable global para guardar el communicationId
-let communicationId = null;
+/**
+ * 🔍 Función para obtener el último callback de todos los participantes
+ * @param {Array} participantes - Lista de participantes de la interacción
+ * @returns {Object|null} último callback encontrado
+ */
+function obtenerUltimoCallback(participantes) {
+  let ultimoCallback = null;
 
-// Función para suscribirse al topic
+  participantes.forEach(part => {
+    if (Array.isArray(part.callbacks) && part.callbacks.length > 0) {
+      const ultimoDeEste = part.callbacks[part.callbacks.length - 1];
+      if (
+        !ultimoCallback ||
+        new Date(ultimoDeEste.connectedTime) > new Date(ultimoCallback.connectedTime)
+      ) {
+        ultimoCallback = ultimoDeEste;
+      }
+    }
+  });
+
+  return ultimoCallback;
+}
+
+/**
+ * 📡 Función para suscribirse al topic de conversaciones de un usuario
+ * @param {string} userId - ID del usuario
+ */
 function suscribirseATopic(userId) {
   console.log("[suscribirseATopic] Iniciando suscripción para userId:", userId);
 
   const notificationsApi = new platformClient.NotificationsApi();
-
-  // Topic para el usuario
   const topic = `v2.users.${userId}.conversations`;
   console.log("[suscribirseATopic] Topic a suscribirse:", topic);
 
-  // Crear canal WebSocket
   notificationsApi.postNotificationsChannels()
     .then(channel => {
       console.log("[suscribirseATopic] Canal creado:", channel);
 
+      // Crear y conectar el WebSocket
       const websocket = new WebSocket(channel.connectUri);
       console.log("[suscribirseATopic] Conectando WebSocket a:", channel.connectUri);
 
@@ -764,7 +784,7 @@ function suscribirseATopic(userId) {
         console.warn("[WebSocket] Conexión cerrada ⚠️");
       };
 
-      websocket.onmessage = function(event) {
+      websocket.onmessage = function (event) {
         console.log("[WebSocket] Mensaje recibido:", event.data);
 
         const data = JSON.parse(event.data);
@@ -774,28 +794,32 @@ function suscribirseATopic(userId) {
           return;
         }
 
-        // Buscar el último participante
         const participantes = data.eventBody.participants;
-        const ultimo = participantes[participantes.length - 1];
-
         console.log("[WebSocket] Participantes detectados:", participantes);
-        console.log("[WebSocket] Último participante:", ultimo);
 
-        // Guardar communicationId si existe
-        if (ultimo && (ultimo.peerId || ultimo.peer)) {
-          communicationId = ultimo.peerId || ultimo.peer;
-          console.log("[WebSocket] CommunicationId asignado:", communicationId);
-        } else {
-          console.warn("[WebSocket] No se encontró peerId/peer en el último participante");
-        }
+        // Obtener el último callback
+        const ultimoCallback = obtenerUltimoCallback(participantes);
 
-        // Verificar si el estado es 'terminated'
-        if (ultimo && ultimo.state === 'terminated') {
-          console.log("[WebSocket] Estado 'terminated' detectado → habilitar botón");
-          habilitarBoton(true);
+        if (ultimoCallback) {
+          console.log("[WebSocket] Último callback encontrado:", ultimoCallback);
+
+          if (ultimoCallback.peerId) {
+            globalCommunicationId = ultimoCallback.peerId;
+            console.log("[WebSocket] CommunicationId asignado:", globalCommunicationId);
+          } else {
+            console.warn("[WebSocket] El último callback no tiene peerId");
+          }
+
+          // Verificar estado para habilitar/deshabilitar botón
+          if (ultimoCallback.state === "terminated" || ultimoCallback.state === "disconnected") {
+            console.log("[WebSocket] Callback finalizado → habilitar botón");
+            habilitarBoton(true);
+          } else {
+            console.log("[WebSocket] Callback activo → deshabilitar botón");
+            habilitarBoton(false);
+          }
         } else {
-          console.log("[WebSocket] Estado distinto de 'terminated' → deshabilitar botón");
-          habilitarBoton(false);
+          console.warn("[WebSocket] No se encontró ningún callback en los participantes");
         }
       };
 
@@ -813,6 +837,7 @@ function suscribirseATopic(userId) {
       console.error("[suscribirseATopic] Error al crear canal ❌", err);
     });
 }
+
 
 
 function habilitarBoton(estado) {
