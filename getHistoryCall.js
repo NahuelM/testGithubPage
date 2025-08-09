@@ -769,7 +769,6 @@ function procesarEvento(data) {
             llamadaTerminada = true;
             communicationId = call.id || null;
             console.warn("COMUNICATION ID:  " + communicationId);
-            websocket.dis
             break; // ya encontré un callback desconectado para este participante
           }
         }
