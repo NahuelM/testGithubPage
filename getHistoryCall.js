@@ -758,32 +758,32 @@ function procesarEvento(data) {
 
   const participantes = data.eventBody.participants;
 
-  // Buscar callback desconectado más reciente
-  let callbackTerminado = null;
-  let maxDisconnectedTime = 0;
+  let llamadaTerminada = false;
+  let communicationId = null;
 
-  participantes.forEach(part => {
-    if (part.callbacks && Array.isArray(part.callbacks)) {
-      part.callbacks.forEach(cb => {
-        if (cb.disconnectedTime && (cb.state === "disconnected" || cb.state === "terminated" || cb.state === "complete")) {
-          const disconnectedTimestamp = new Date(cb.disconnectedTime).getTime();
-          if (disconnectedTimestamp > maxDisconnectedTime) {
-            maxDisconnectedTime = disconnectedTimestamp;
-            callbackTerminado = cb;
+  for (const participante of participantes) {
+    if (participante.purpose === "agent" || participante.purpose === "customer") {
+      if (participante.callbacks && Array.isArray(participante.callbacks)) {
+        for (const cb of participante.callbacks) {
+          if (cb.state === "disconnected" || cb.state === "terminated") {
+            llamadaTerminada = true;
+            communicationId = cb.peerId || cb.id || null;
+            break; // ya encontré un callback desconectado para este participante
           }
         }
-      });
+      }
     }
-  });
+    if (llamadaTerminada) break; // no necesito seguir buscando si ya la encontré
+  }
 
-  if (callbackTerminado) {
-    globalCommunicationId = callbackTerminado.peerId || callbackTerminado.id || null;
-    console.log("Callback terminado encontrado con peerId:", globalCommunicationId);
+  if (llamadaTerminada) {
+    globalCommunicationId = communicationId;
+    console.log("Llamada terminada, communicationId:", globalCommunicationId);
     habilitarBoton(true);
   } else {
-    console.log("No se encontró callback terminado");
     globalCommunicationId = null;
     habilitarBoton(false);
+    console.log("Llamada no terminada o no encontrada");
   }
 }
 
