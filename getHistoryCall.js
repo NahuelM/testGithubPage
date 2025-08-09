@@ -553,7 +553,7 @@ function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) 
 
     apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
     .then((data) => {
-      console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
+      console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
     })
     .catch((err) => {
       console.log("There was a failure calling postIntegrationsActionExecute");
@@ -581,7 +581,7 @@ function tipificarInCall(conversationId, participantId, communicationId, wrapupC
 
   apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
   .then((data) => {
-    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data.body, null, 2)}`);
+    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
   })
   .catch((err) => {
     console.log("There was a failure calling postIntegrationsActionExecute");
@@ -765,9 +765,10 @@ function procesarEvento(data) {
     if (participante.purpose === "agent" || participante.purpose === "customer") {
       if (participante.callbacks && Array.isArray(participante.callbacks)) {
         for (const cb of participante.callbacks) {
-          if (cb.state === "disconnected" || cb.state === "terminated") {
+          if (cb.state === "disconnected" /*|| cb.state === "terminated"*/) {
             llamadaTerminada = true;
             communicationId = cb.peerId || cb.id || null;
+            console.warn("COMUNICATION ID:  " + communicationId);
             break; // ya encontré un callback desconectado para este participante
           }
         }
@@ -808,7 +809,6 @@ function suscribirseATopic(userId) {
       };
 
       websocket.onerror = err => {
-        console.error("[WebSocket] Error ❌", err);
       };
 
       websocket.onclose = () => {
