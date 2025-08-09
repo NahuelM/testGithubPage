@@ -743,7 +743,7 @@ let globalCommunicationId = null;
 function habilitarBoton(estado) {
   const button = document.getElementById("Tipificar");
   if (button) {
-    button.disabled = !estado;
+    button.disabled = estado;
     button.style.opacity = estado ? "1" : "0.5";  // Translucido cuando está deshabilitado
     button.style.cursor = estado ? "pointer" : "not-allowed";
   }
