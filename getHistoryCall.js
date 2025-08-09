@@ -783,10 +783,10 @@ function procesarEvento(data) {
   if (llamadaTerminada) {
     globalCommunicationId = communicationId;
     console.log("Llamada terminada, communicationId:", globalCommunicationId);
-    habilitarBoton(true);
+    habilitarBoton(false);
   } else {
     globalCommunicationId = null;
-    habilitarBoton(false);
+    habilitarBoton(true);
     console.log("Llamada no terminada o no encontrada");
   }
 }
