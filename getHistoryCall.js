@@ -505,25 +505,37 @@ function accionTelefonoObtendio() {
 
 
 let ContactName = "customer";
+
 function autocompleteForm(body) {
-  ContactName = body.name +" "+ body.apellido;
+  ContactName = (body.nombre || '') + " " + (body.apellido || '');
+
   const formMap = {
-    nombres: body.nombre || '',
-    apellidos: body.apellido || '',
-    direccion: body.direccion || '',
-    localidad: body.localidad || '',
-    email: body.email || '',
-    fechaNacimiento: body.birthDate || '',
-    telefono1: body.phoneValues?.[0] || '',
-    telefono2: body.phoneValues?.[1] || '',
-    telefono3: body.phoneValues?.[2] || '',
+    nombres: body.nombre,
+    apellidos: body.apellido,
+    direccion: body.direccion,
+    localidad: body.localidad,
+    email: body.email,
+    fechaNacimiento: body.fechaNacimiento,
+    telefono1: body.phoneValues?.[0],
+    telefono2: body.phoneValues?.[1],
+    telefono3: body.phoneValues?.[2],
+    telefono4: body.phoneValues?.[3],
   };
 
   Object.entries(formMap).forEach(([id, value]) => {
-    const el = document.getElementById(id);
-    if (el) el.value = value;
+    if (value !== undefined && value !== null && value !== '') {
+      const el = document.getElementById(id);
+      if (el) {
+        if (el.tagName.toLowerCase() === 'select') {
+          el.value = value;
+        } else {
+          el.value = value;
+        }
+      }
+    }
   });
 }
+
 
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
 function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) {
@@ -839,10 +851,12 @@ function suscribirseATopic(userId) {
 }
 
 
-
 function habilitarBoton(estado) {
   const button = document.getElementById("Tipificar");
   if (button) {
     button.disabled = !estado;
+    button.style.opacity = estado ? "1" : "0.5"; // 1 = normal, 0.5 = translúcido
+    button.style.cursor = estado ? "pointer" : "not-allowed"; // opcional, cambia el cursor
   }
 }
+
