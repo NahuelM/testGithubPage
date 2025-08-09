@@ -763,8 +763,8 @@ function procesarEvento(data) {
 
   for (const participante of participantes) {
     if (participante.purpose === "agent" || participante.purpose === "customer") {
-      if (participante.callbacks && Array.isArray(participante.callbacks)) {
-        for (const cb of participante.callbacks) {
+      if (participante.calls && Array.isArray(participante.calls)) {
+        for (const cb of participante.calls) {
           if (cb.state === "disconnected" /*|| cb.state === "terminated"*/) {
             llamadaTerminada = true;
             communicationId = cb.peerId || cb.id || null;
