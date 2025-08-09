@@ -764,10 +764,10 @@ function procesarEvento(data) {
   for (const participante of participantes) {
     if (participante.purpose === "agent" || participante.purpose === "customer") {
       if (participante.calls && Array.isArray(participante.calls)) {
-        for (const cb of participante.calls) {
-          if (/*cb.state === "disconnected" ||*/ cb.state === "terminated") {
+        for (const call of participante.calls) {
+          if (call.state === "disconnected" /*|| call.state === "terminated"*/) {
             llamadaTerminada = true;
-            communicationId = cb.peerId || cb.id || null;
+            communicationId = call.peerId || call.id || null;
             console.warn("COMUNICATION ID:  " + communicationId);
             break; // ya encontré un callback desconectado para este participante
           }
