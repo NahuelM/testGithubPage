@@ -585,6 +585,7 @@ function tipificarInCall(conversationId, participantId, communicationId, wrapupC
   apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
   .then((data) => {
     console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
+    globalCommunicationId = null;
   })
   .catch((err) => {
     console.log("There was a failure calling postIntegrationsActionExecute");
