@@ -752,7 +752,7 @@ function habilitarBoton(estado) {
 function procesarEvento(data) {
   if (!data.eventBody || !data.eventBody.participants) {
     console.warn("Mensaje sin eventBody o participants");
-    habilitarBoton(false);
+    //habilitarBoton(false);
     return;
   }
 
@@ -767,8 +767,9 @@ function procesarEvento(data) {
         for (const call of participante.calls) {
           if (call.state === "disconnected" /*|| call.state === "terminated"*/) {
             llamadaTerminada = true;
-            communicationId = call.peerId || call.id || null;
+            communicationId = call.id || null;
             console.warn("COMUNICATION ID:  " + communicationId);
+            websocket.dis
             break; // ya encontré un callback desconectado para este participante
           }
         }
