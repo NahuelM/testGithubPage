@@ -738,41 +738,61 @@ function addTagVenta(conversationId, tagName){
 }
 
 
-
-// Variable global para guardar el communicationId
 let globalCommunicationId = null;
 
-/**
- * 🔍 Función para obtener el último callback de todos los participantes
- * @param {Array} participantes - Lista de participantes de la interacción
- * @returns {Object|null} último callback encontrado
- */
-function obtenerUltimoCallback(participantes) {
-  let ultimoCallback = null;
+function habilitarBoton(estado) {
+  const button = document.getElementById("Tipificar");
+  if (button) {
+    button.disabled = !estado;
+    button.style.opacity = estado ? "1" : "0.5";  // Translucido cuando está deshabilitado
+    button.style.cursor = estado ? "pointer" : "not-allowed";
+  }
+}
+
+function procesarEvento(data) {
+  if (!data.eventBody || !data.eventBody.participants) {
+    console.warn("Mensaje sin eventBody o participants");
+    habilitarBoton(false);
+    return;
+  }
+
+  const participantes = data.eventBody.participants;
+
+  // Buscar callback desconectado más reciente
+  let callbackTerminado = null;
+  let maxDisconnectedTime = 0;
 
   participantes.forEach(part => {
-    if (Array.isArray(part.callbacks) && part.callbacks.length > 0) {
-      const ultimoDeEste = part.callbacks[part.callbacks.length - 1];
-      if (
-        !ultimoCallback ||
-        new Date(ultimoDeEste.connectedTime) > new Date(ultimoCallback.connectedTime)
-      ) {
-        ultimoCallback = ultimoDeEste;
-      }
+    if (part.callbacks && Array.isArray(part.callbacks)) {
+      part.callbacks.forEach(cb => {
+        if (cb.disconnectedTime && (cb.state === "disconnected" || cb.state === "terminated" || cb.state === "complete")) {
+          const disconnectedTimestamp = new Date(cb.disconnectedTime).getTime();
+          if (disconnectedTimestamp > maxDisconnectedTime) {
+            maxDisconnectedTime = disconnectedTimestamp;
+            callbackTerminado = cb;
+          }
+        }
+      });
     }
   });
 
-  return ultimoCallback;
+  if (callbackTerminado) {
+    globalCommunicationId = callbackTerminado.peerId || callbackTerminado.id || null;
+    console.log("Callback terminado encontrado con peerId:", globalCommunicationId);
+    habilitarBoton(true);
+  } else {
+    console.log("No se encontró callback terminado");
+    globalCommunicationId = null;
+    habilitarBoton(false);
+  }
 }
 
-/**
- * 📡 Función para suscribirse al topic de conversaciones de un usuario
- * @param {string} userId - ID del usuario
- */
 function suscribirseATopic(userId) {
   console.log("[suscribirseATopic] Iniciando suscripción para userId:", userId);
 
   const notificationsApi = new platformClient.NotificationsApi();
+
+  // El topic debe ir entre comillas invertidas para que se evalúe la variable userId
   const topic = `v2.users.${userId}.conversations`;
   console.log("[suscribirseATopic] Topic a suscribirse:", topic);
 
@@ -780,7 +800,6 @@ function suscribirseATopic(userId) {
     .then(channel => {
       console.log("[suscribirseATopic] Canal creado:", channel);
 
-      // Crear y conectar el WebSocket
       const websocket = new WebSocket(channel.connectUri);
       console.log("[suscribirseATopic] Conectando WebSocket a:", channel.connectUri);
 
@@ -796,47 +815,14 @@ function suscribirseATopic(userId) {
         console.warn("[WebSocket] Conexión cerrada ⚠️");
       };
 
-      websocket.onmessage = function (event) {
+      websocket.onmessage = function(event) {
         console.log("[WebSocket] Mensaje recibido:", event.data);
-
         const data = JSON.parse(event.data);
-
-        if (!data.eventBody || !data.eventBody.participants) {
-          console.warn("[WebSocket] Mensaje sin eventBody o participants");
-          return;
-        }
-
-        const participantes = data.eventBody.participants;
-        console.log("[WebSocket] Participantes detectados:", participantes);
-
-        // Obtener el último callback
-        const ultimoCallback = obtenerUltimoCallback(participantes);
-
-        if (ultimoCallback) {
-          console.log("[WebSocket] Último callback encontrado:", ultimoCallback);
-
-          if (ultimoCallback.peerId) {
-            globalCommunicationId = ultimoCallback.peerId;
-            console.log("[WebSocket] CommunicationId asignado:", globalCommunicationId);
-          } else {
-            console.warn("[WebSocket] El último callback no tiene peerId");
-          }
-
-          // Verificar estado para habilitar/deshabilitar botón
-          if (ultimoCallback.state === "terminated" || ultimoCallback.state === "disconnected") {
-            console.log("[WebSocket] Callback finalizado → habilitar botón");
-            habilitarBoton(true);
-          } else {
-            console.log("[WebSocket] Callback activo → deshabilitar botón");
-            habilitarBoton(false);
-          }
-        } else {
-          console.warn("[WebSocket] No se encontró ningún callback en los participantes");
-        }
+        procesarEvento(data);
       };
 
       // Suscribirse al topic
-      notificationsApi.postNotificationsChannelSubscriptions(channel.id, [{ id: topic }])
+      return notificationsApi.postNotificationsChannelSubscriptions(channel.id, [{ id: topic }])
         .then(() => {
           console.log("[suscribirseATopic] Suscripción al topic exitosa ✅");
         })
@@ -849,14 +835,3 @@ function suscribirseATopic(userId) {
       console.error("[suscribirseATopic] Error al crear canal ❌", err);
     });
 }
-
-
-function habilitarBoton(estado) {
-  const button = document.getElementById("Tipificar");
-  if (button) {
-    button.disabled = !estado;
-    button.style.opacity = estado ? "1" : "0.5"; // 1 = normal, 0.5 = translúcido
-    button.style.cursor = estado ? "pointer" : "not-allowed"; // opcional, cambia el cursor
-  }
-}
-
