@@ -765,7 +765,7 @@ function procesarEvento(data) {
     if (participante.purpose === "agent" || participante.purpose === "customer") {
       if (participante.calls && Array.isArray(participante.calls)) {
         for (const call of participante.calls) {
-          if (call.state === "disconnected" /*|| call.state === "terminated"*/) {
+          if (/*call.state === "disconnected" ||*/ call.state === "terminated") {
             llamadaTerminada = true;
             communicationId = call.id || null;
             console.warn("COMUNICATION ID:  " + communicationId);
