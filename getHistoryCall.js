@@ -335,6 +335,7 @@ document.getElementById('Tipificar').onclick = (e) => {
   const wrapupName = select.options[select.selectedIndex].text;
 
   const note = document.getElementById("notes");
+  console.warn("SE LLAMA A UNA FUNCION DE TIPIFICACION");
   if(globalCommunicationId === null)
     tipificar(conversationId, participantId, wrapupCode, wrapupName, note.value);
   else tipificarInCall(conversationId, participantId, globalCommunicationId, wrapupCode, wrapupName, note.value);
@@ -508,7 +509,7 @@ let ContactName = "customer";
 
 function autocompleteForm(body) {
   ContactName = (body.nombre || '') + " " + (body.apellido || '');
-  console.log("el body esta vacio?:: " + body);
+  console.log("el body esta vacio?:: " + JSON.stringify(body));
   const formMap = {
     nombres: body.nombre,
     apellidos: body.apellido,
@@ -540,6 +541,7 @@ function autocompleteForm(body) {
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
 function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) {
   //if(wrapupName !== "Apertura de deposito" && fechaCallbackVacio){
+  console.warn("TIPIFICAR ");
     let apiIntegration = new platformClient.IntegrationsApi();
     let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
     let body = {"conversationId":conversationId,
@@ -567,6 +569,7 @@ function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) 
 
 //custom_-_b2112b56-f4f2-43b9-9d20-248029edcb7a
 function tipificarInCall(conversationId, participantId, communicationId, wrapupCode, wrapupName, note){
+  console.warn("TIPIFICAR IN CALL!!");
   let apiIntegration = new platformClient.IntegrationsApi();
   let actionId = "custom_-_b2112b56-f4f2-43b9-9d20-248029edcb7a"; 
   let body = {"conversationId":conversationId,
