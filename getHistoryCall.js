@@ -508,7 +508,7 @@ let ContactName = "customer";
 
 function autocompleteForm(body) {
   ContactName = (body.nombre || '') + " " + (body.apellido || '');
-
+  console.log("el body esta vacio?:: " + body);
   const formMap = {
     nombres: body.nombre,
     apellidos: body.apellido,
@@ -539,7 +539,7 @@ function autocompleteForm(body) {
 
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
 function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) {
-  if(wrapupName !== "Apertura de deposito" && fechaCallbackVacio){
+  //if(wrapupName !== "Apertura de deposito" && fechaCallbackVacio){
     let apiIntegration = new platformClient.IntegrationsApi();
     let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
     let body = {"conversationId":conversationId,
@@ -559,10 +559,10 @@ function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) 
       console.log("There was a failure calling postIntegrationsActionExecute");
       console.error(err);
     });
-  }
-  else{
+  //}
+ // else{
     //Mostrar mensje de que deben llenar callback
-  }
+ // }
 }
 
 //custom_-_b2112b56-f4f2-43b9-9d20-248029edcb7a
