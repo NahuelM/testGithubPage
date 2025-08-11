@@ -646,7 +646,7 @@ function getTableDataObject() {
 function updateContact(contactListId, contactId, body, data){
   let apiIntegration = new platformClient.IntegrationsApi();
   let actionId = "custom_-_265f8b01-f154-4f87-80da-20ece14ff306"; 
-  let body = {"contactListId":contactListId,
+  let body2 = {"contactListId":contactListId,
               "contactId":contactId, 
               "body":body,
               "data":data
@@ -655,7 +655,7 @@ function updateContact(contactListId, contactId, body, data){
     "flatten": false 
   };
 
-  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+  apiIntegration.postIntegrationsActionExecute(actionId, body2, opts)
   .then((data) => {
     console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
   })
