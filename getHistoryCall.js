@@ -422,7 +422,7 @@ document.getElementById("checkboxOwner").onclick = () => {
   dropDown.style.display = checkbox.checked ? "block" : "none";
 };
 
-document.getElementById("ventaButton").onclick = () =>{
+document.getElementById("ventaButton").onclick = (e) =>{
   e.preventDefault();
   const conversationId = localStorage.getItem('conversationId');
   const participantId = localStorage.getItem('participantId'); //deberia ser el participantID del customer
