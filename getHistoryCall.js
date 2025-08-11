@@ -379,6 +379,13 @@ document.getElementById('Tipificar').onclick = (e) => {
   if(globalCommunicationId === null)
     tipificar(conversationId, participantId, wrapupCode, wrapupName, note.value);
   else tipificarInCall(conversationId, participantId, globalCommunicationId, wrapupCode, wrapupName, note.value);
+
+  // Si el wrapup requiere fecha y la fecha está seleccionada, llamar createCallbackGateway
+  if (wrapupsQueRequierenFecha.includes(wrapupLabel) && callbackDatetime) {
+    createCallbackGateway();
+    messageDiv.textContent = "callback programado";
+    messageDiv.style.color = "black";
+  }
 };
 
 document.getElementById('Callback').onclick = (e) => {
