@@ -424,11 +424,15 @@ document.getElementById("checkboxOwner").onclick = () => {
 
 document.getElementById("ventaButton").onclick = (e) =>{
   e.preventDefault();
+  const ventaButton = e.target; // el botón que se clickeó
+  ventaButton.disabled = true; // lo deshabilita
+  ventaButton.style.opacity = "0.5"; // baja opacidad para feedback visual
   const conversationId = localStorage.getItem('conversationId');
   const participantId = localStorage.getItem('participantId'); //deberia ser el participantID del customer
   addInfoVenta(conversationId, participantId, getVentaData());
   addTagVenta(conversationId, "Venta");
-
+  alert("Datos guardados")
+  
 }
 
 function getVentaData(){
