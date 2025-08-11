@@ -170,6 +170,19 @@ const platformClient = require('platformClient');
 		height: 100vh;
 		overflow: hidden;
 	} */
+
+  #callback-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinea todo a la izquierda */
+  }
+
+  #callback-form label {
+    display: flex;
+    align-items: center; /* Centra verticalmente checkbox y texto */
+    gap: 5px; /* Espacio entre el checkbox y la palabra */
+  }
+
 </style>
 </head>
 <body>
@@ -298,6 +311,7 @@ const platformClient = require('platformClient');
       <select id="wrapup" name="wrapup"></select>
       <textarea id="notes" name="notas" rows="4" placeholder="Comentarios..."></textarea>
       <button id="Tipificar" type="submit">Tipificar</button>
+      <div id="tipificarMessage"></div>
     </form>
   </div>
 
@@ -445,7 +459,9 @@ const platformClient = require('platformClient');
       const valid = validateField(fields[key]);
       if (!valid) allValid = false;
     }
+
     submitBtn.disabled = !allValid;
+    submitBtn.style.opacity = allValid ? "1" : "0.5";
   }
 
   for (const key in fields) {
@@ -457,18 +473,16 @@ const platformClient = require('platformClient');
   }
 
 
-  document.getElementById('main-form').addEventListener('submit', function (e) {
+  document.getElementById('formContainer').addEventListener('submit', function (e) {
   e.preventDefault();
   validator.revalidate().then(isValid => {
     if (isValid) {
       alert('Formulario válido. Guardando...');
-      // acá va tu lógica para enviar los datos
     } else {
       alert('Hay errores en el formulario.');
     }
     });
   });
-
 
   document.getElementById('update-table').onclick = () => {
     alert('Aquí llamás tu endpoint para actualizar BD');

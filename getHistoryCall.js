@@ -329,6 +329,8 @@ if (!window.__alreadyRan) {
       await getUsersByDivision("Home");
 
       const title = document.getElementById("campanaTitle");
+      const miSelect = document.getElementById('AgenteCall');
+      miSelect.value = userId;
 
       if (pending) {
         title.innerHTML = `<span style="color:#e53935;">Pendiente de campaña ${campaingName}</span>`;
@@ -345,12 +347,35 @@ document.getElementById('Tipificar').onclick = (e) => {
   const conversationId = localStorage.getItem('conversationId');
   const participantId = localStorage.getItem('participantId');
 
-  const select = document.getElementById('wrapup');
-  const wrapupCode = select.value;
-  const wrapupName = select.options[select.selectedIndex].text;
+  const wrapupSelect = document.getElementById('wrapup');
+  const wrapupCode = wrapupSelect.value;
+  const wrapupName = wrapupSelect.options[wrapupSelect.selectedIndex].text;
 
   const note = document.getElementById("notes");
-  console.warn("SE LLAMA A UNA FUNCION DE TIPIFICACION");
+  
+  const wrapupLabel = wrapupSelect.options[wrapupSelect.selectedIndex]?.text || '';
+  const callbackDatetime = document.getElementById('callback-datetime').value;
+  const messageDiv = document.getElementById('tipificarMessage');
+  // Lista de labels que requieren fecha de callback
+
+  if (!wrapupCode) {
+    messageDiv.textContent = "Debe seleccionar una tipificación.";
+    messageDiv.style.color = "red";
+    return; // detener la ejecución
+  }
+  const wrapupsQueRequierenFecha = [
+    "Apertura de deposito",
+    "Otro wrapup que requiere fecha"
+  ];
+  // Si el wrapup es de los que requieren fecha y no hay fecha seleccionada
+  if (wrapupsQueRequierenFecha.includes(wrapupLabel) && !callbackDatetime) {
+    messageDiv.textContent = "Debe seleccionar una fecha para el callback.";
+    messageDiv.style.color = "red";
+    return; // detener la ejecución
+  }
+
+  // Si pasa la validación, limpiar el mensaje
+  messageDiv.textContent = "";
   if(globalCommunicationId === null)
     tipificar(conversationId, participantId, wrapupCode, wrapupName, note.value);
   else tipificarInCall(conversationId, participantId, globalCommunicationId, wrapupCode, wrapupName, note.value);
@@ -394,10 +419,39 @@ document.getElementById("ventaButton").onclick = () =>{
   e.preventDefault();
   const conversationId = localStorage.getItem('conversationId');
   const participantId = localStorage.getItem('participantId'); //deberia ser el participantID del customer
-  addInfoVenta(conversationId, participantId, ventaData);
+  addInfoVenta(conversationId, participantId, getVentaData());
   addTagVenta(conversationId, "Venta");
 
 }
+
+function getVentaData(){
+  const form = document.getElementById('formContainer');
+  if (!form) return '';
+
+  const orderedFields = [
+    'nombres',
+    'apellidos',
+    'ci',
+    'fechaNacimiento',
+    'direccion',
+    'departamento',
+    'localidad',
+    'codigoPostal',
+    'telefono1',
+    'telefono2',
+    'telefono3',
+    'telefono4',
+    'email'
+  ];
+
+  const values = orderedFields.map(id => {
+    const el = document.getElementById(id);
+    return el ? el.value.trim() : '';
+  });
+
+  return values.join(';');
+}
+
 
 let PhoneNumbers = ""
 //custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1
@@ -555,31 +609,26 @@ function autocompleteForm(body) {
 
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
 function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) {
-  //if(wrapupName !== "Apertura de deposito" && fechaCallbackVacio){
-  console.warn("TIPIFICAR ");
-    let apiIntegration = new platformClient.IntegrationsApi();
-    let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
-    let body = {"conversationId":conversationId,
-                "participantId":participantId, 
-                "wrapupCode":wrapupCode,
-                "wrapupName":wrapupName,
-                "note": note}; 
-    let opts = { 
-      "flatten": false 
-    };
+  let apiIntegration = new platformClient.IntegrationsApi();
+  let actionId = "custom_-_d6f14107-797f-4ca2-bff9-107facd56f89"; 
+  let body = {"conversationId":conversationId,
+              "participantId":participantId, 
+              "wrapupCode":wrapupCode,
+              "wrapupName":wrapupName,
+              "note": note}; 
+  let opts = { 
+    "flatten": false 
+  };
 
-    apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
-    .then((data) => {
-      console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
-    })
-    .catch((err) => {
-      console.log("There was a failure calling postIntegrationsActionExecute");
-      console.error(err);
-    });
-  //}
- // else{
-    //Mostrar mensje de que deben llenar callback
- // }
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+  .then((data) => {
+    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
+  })
+  .catch((err) => {
+    console.log("There was a failure calling postIntegrationsActionExecute");
+    console.error(err);
+  });
+
 }
 
 //custom_-_b2112b56-f4f2-43b9-9d20-248029edcb7a
