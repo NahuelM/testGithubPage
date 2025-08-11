@@ -473,16 +473,16 @@ const platformClient = require('platformClient');
   }
 
 
-  document.getElementById('formContainer').addEventListener('submit', function (e) {
-  e.preventDefault();
-  validator.revalidate().then(isValid => {
-    if (isValid) {
-      alert('Formulario válido. Guardando...');
-    } else {
-      alert('Hay errores en el formulario.');
-    }
-    });
-  });
+  // document.getElementById('formContainer').addEventListener('submit', function (e) {
+  // e.preventDefault();
+  // validator.revalidate().then(isValid => {
+  //   if (isValid) {
+  //     alert('Formulario válido. Guardando...');
+  //   } else {
+  //     alert('Hay errores en el formulario.');
+  //   }
+  //   });
+  // });
 
   
 </script>
