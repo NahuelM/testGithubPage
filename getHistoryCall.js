@@ -153,12 +153,12 @@ function renderTabla(data) {
   contenedor.innerHTML = ""; // ← limpia el contenido anterior
   new gridjs.Grid({
     columns: [
-      'Fecha (GMT-3)',
-      'Duracion',
-      'DNIS',
-      'WrapUp Codes',
+      'Fecha',
+      'Duración',
+      'Teléfono',
+      'Tipificación',
       'Agentes',
-      'Notas'
+      'Comentarios'
     ],
     data: data,
     search: true,
@@ -421,7 +421,7 @@ async function getContactData(contactId, campaignId){
 
     renderEditableTable(tableData, editableFields);
     
-    autocompleteForm(data);
+    autocompleteForm(data.body);
     
   })
   .catch((err) => {
