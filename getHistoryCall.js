@@ -21,6 +21,8 @@ async function login() {
   const userId =  urlParams.get('userId') || '';
   const userName =  urlParams.get('userName') || '';
   const queueId =  urlParams.get('queueId') || '';
+  const campaingName =  urlParams.get('campaingName') || '';
+  const pending =  urlParams.get('pending') || '';
 
 
   const stateObj = new URLSearchParams();
@@ -32,6 +34,8 @@ async function login() {
   if (userId) stateObj.append('userId', userId);
   if (userName) stateObj.append('userName', userName);
   if (queueId) stateObj.append('queueId', queueId);
+  if (campaingName) stateObj.append('campaingName', campaingName);
+  if (pending) stateObj.append('pending', pending);
   
   
   // Podés agregar más parámetros al state así:
@@ -316,11 +320,22 @@ if (!window.__alreadyRan) {
       const contactId = localStorage.getItem('contactId');
       const campaignId = localStorage.getItem('campaignId');
       const userId = localStorage.getItem("userId")
+      const campaingName = localStorage.getItem("campaingName")
+      const pending = localStorage.getItem("pending")
+      suscribirseATopic(userId);
       await getHistoryCalls(contactId);
       await getContactData(contactId, campaignId);
       await getWrapUpCodes("*");
       await getUsersByDivision("Home");
-      suscribirseATopic(userId);
+
+      const title = document.getElementById("campanaTitle");
+
+      if (pending) {
+        title.innerHTML = `<span style="color:#e53935;">Pendiente de campaña ${campaingName}</span>`;
+      } else {
+        title.textContent = campaingName;
+      }
+
     }
   })();
 }
