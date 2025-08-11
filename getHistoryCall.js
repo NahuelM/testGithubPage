@@ -460,11 +460,14 @@ function getVentaData(){
 }
 
 
-let PhoneNumbers = ""
+let PhoneNumbers = "";
 //custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1
+//custom_-_215760ee-79fc-4aec-a6c5-0a4594e8e984
+let contactBodyData = "";
+let contactListId = "";
 async function getContactData(contactId, campaignId){
   let apiIntegration = new platformClient.IntegrationsApi();
-  let actionId = "custom_-_6e654f5a-43e2-4fce-b590-ce54d40d2ec1"; 
+  let actionId = "custom_-_215760ee-79fc-4aec-a6c5-0a4594e8e984"; 
   let body = {"contactId":contactId,"campaignId":campaignId}; 
   let opts = { 
     "flatten": false 
@@ -483,7 +486,8 @@ async function getContactData(contactId, campaignId){
     renderEditableTable(tableData, editableFields);
     
     autocompleteForm(data.body);
-    
+    contactBodyData = data.data;
+    contactListId = data.contactListId;
   })
   .catch((err) => {
     console.log("There was a failure calling postIntegrationsActionExecute");
@@ -613,6 +617,53 @@ function autocompleteForm(body) {
   });
 }
 
+
+document.getElementById('update-table').onclick = () => {
+  const contactId = localStorage.getItem('contactId');
+  updateContact(contactListId, contactId, contactBodyData, getTableDataObject());
+};
+
+
+function getTableDataObject() {
+  const table = document.querySelector('#gridjs-table table');
+  const rows = table.querySelectorAll('tbody tr');
+  const data = {};
+
+  rows.forEach(row => {
+    const cells = row.querySelectorAll('td');
+
+    const key = cells[0].textContent.trim();
+    const input = cells[1].querySelector('input');
+    const value = input ? input.value.trim() : cells[1].textContent.trim();
+
+    data[key] = value;
+  });
+
+  return data;
+}
+
+//custom_-_265f8b01-f154-4f87-80da-20ece14ff306
+function updateContact(contactListId, contactId, body, data){
+  let apiIntegration = new platformClient.IntegrationsApi();
+  let actionId = "custom_-_265f8b01-f154-4f87-80da-20ece14ff306"; 
+  let body = {"contactListId":contactListId,
+              "contactId":contactId, 
+              "body":body,
+              "data":data
+            }; 
+  let opts = { 
+    "flatten": false 
+  };
+
+  apiIntegration.postIntegrationsActionExecute(actionId, body, opts)
+  .then((data) => {
+    console.log(`postIntegrationsActionExecute success! data: ${JSON.stringify(data, null, 2)}`);
+  })
+  .catch((err) => {
+    console.log("There was a failure calling postIntegrationsActionExecute");
+    console.error(err);
+  });
+}
 
 //custom_-_d6f14107-797f-4ca2-bff9-107facd56f89
 function tipificar(conversationId, participantId, wrapupCode, wrapupName, note) {
